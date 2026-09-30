@@ -1,0 +1,11 @@
+sistema-qualidade/frontend/node_modules/
+sistema-qualidade/backend/sistema-qualidade/.gradle/
+sistema-qualidade/backend/sistema-qualidade/build/
+*.class
+.env
+*.log
+
+frontend/node_modules/
+
+# === MOCKUPS (não subir) ===
+mockups/

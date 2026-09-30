@@ -1,0 +1,217 @@
+:root{
+  /* Color palette (requested) */
+  --blue-900:#003B64; /* header dark navy */
+  --blue-800:#075985; /* sidebar / accents */
+  --blue-700:#0a5778;
+  --blue-500:#1c81a6;
+  --accent:#F58220; /* orange */
+  --bg:#F4F7FA; /* page background */
+  --surface:#FFFFFF;
+  --muted:#64748B; /* secondary text */
+  --line:#e6eef4;
+  --danger:#c23b33;
+
+  /* Typography */
+  --font-sans: 'Inter', 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  --font-display: 'Oswald', var(--font-sans);
+
+  /* Spacing */
+  --space-xs:6px; --space-sm:10px; --space-md:16px; --space-lg:24px; --space-xl:32px;
+
+  /* Radii & shadows */
+  --radius-sm:8px; --radius-md:12px; --radius-lg:16px;
+  --shadow-sm:0 6px 18px rgba(6,23,34,0.04);
+  --shadow-md:0 12px 40px rgba(6,23,34,0.06);
+  --glass:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--font-sans);
+  background:var(--bg);
+  color:var(--blue-900);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+::selection{background:var(--accent);color:#fff}
+
+/* Header */
+header.app-header{
+  display:flex;align-items:center;gap:18px;padding:18px 28px;background:var(--blue-900);color:#fff;box-shadow:var(--shadow-sm);position:sticky;top:0;z-index:60}
+header.app-header::after{content:"";display:block;height:4px;background:var(--accent);width:100%;position:absolute;left:0;bottom:-4px}
+header.app-header .titles{display:flex;flex-direction:column}
+header.app-header .eyebrow{font-family:var(--font-display);font-size:12px;opacity:.95;letter-spacing:0.6px}
+header.app-header h1{font-size:18px;margin:0;font-weight:700}
+header.app-header .doc-code{margin-left:auto;font-family:var(--font-sans);font-size:13px;opacity:.95;background:transparent;padding:8px 12px;border-radius:10px}
+
+.mobile-menu-btn{display:none;border:0;background:transparent;color:#fff;font-size:20px;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+/* Layout */
+.app-body{display:flex;min-height:calc(100vh - 76px)}
+
+/* Sidebar */
+nav.tabs{width:260px;flex:none;background:var(--blue-800);padding:18px;display:flex;flex-direction:column;gap:8px;border-right:1px solid rgba(255,255,255,0.04)}
+nav.tabs::before{content:"SGQ - Sistema";color:rgba(255,255,255,0.9);font-weight:700;margin-bottom:6px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.03);font-size:14px}
+nav.tabs button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;color:rgba(255,255,255,0.98);font-size:14px;transition:all .18s}
+nav.tabs button .num{font-family:var(--font-sans);font-size:11px;color:rgba(255,255,255,0.85);background:transparent;padding:4px 6px;border-radius:6px}
+nav.tabs button:hover{background:rgba(255,255,255,0.04);transform:translateX(6px)}
+nav.tabs button.active{background:var(--surface);color:var(--blue-900);font-weight:700;box-shadow:0 6px 18px rgba(3,10,18,0.06)}
+/* icons for menu items (visual only) */
+nav.tabs button::before{content:"";display:inline-block;width:30px;height:30px;border-radius:6px;background:rgba(255,255,255,0.03);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
+
+/* Ensure menu numbering is shown only via the inline .num element to avoid duplication */
+
+/* Header logo */
+.logo-senac{width:64px;height:auto;margin-right:12px;flex:none}
+@media(max-width:900px){.logo-senac{width:44px;margin-right:8px}}
+
+/* Main content */
+main.content{flex:1;padding:28px 36px;max-width:1200px;margin:0 auto;background-image:linear-gradient(180deg, rgba(255,255,255,0.0), rgba(255,255,255,0.0)), repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 48px);background-color:var(--bg);}
+section.view{display:none}
+section.view.active{display:block}
+
+/* Titles and descriptions */
+h2.view-title{display:flex;align-items:center;gap:12px;font-size:24px;margin:0 0 8px}
+h2.view-title .tag{background:var(--accent);color:#fff;padding:6px 10px;border-radius:8px;font-size:12px}
+p.view-desc{color:var(--muted);margin:0 0 20px}
+
+/* Card system */
+.card{background:var(--surface);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--line);margin-bottom:20px}
+.card h3{font-size:15px;margin:0 0 12px;color:var(--blue-700)}
+
+/* Report form / preview */
+.report-form .row{margin-bottom:12px}
+.report-form label{font-size:13px;color:var(--muted);margin-bottom:6px}
+.report-form input[type=text],.report-form input[type=date],.report-form textarea{padding:10px;border-radius:8px}
+.report-form .checkboxes{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.report-preview{background:#fff;padding:18px;border-radius:8px;border:1px solid var(--line);min-height:200px}
+.report-preview .r-header{text-align:center;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px}
+.report-preview h1{font-size:16px;margin:0}
+.report-preview h2{font-size:13px;margin:6px 0;color:var(--muted)}
+.report-section{margin-bottom:18px}
+.report-section h4{margin:0 0 8px;color:var(--blue-900)}
+.report-gut table{width:100%;border-collapse:collapse}
+.report-gut th,.report-gut td{padding:8px;border:1px solid #e9eef2;font-size:13px}
+.report-footer{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--line)}
+
+/* Grid helpers */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1000px){.grid-2,.grid-4{grid-template-columns:1fr}}
+
+/* Forms */
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;padding:12px 14px;font-size:14px;border-radius:10px;border:1px solid var(--line);background:#fbfdff;color:var(--blue-900);transition:box-shadow .12s,border-color .12s
+}
+input[type=text]:focus,textarea:focus,select:focus{outline:none;box-shadow:0 10px 30px rgba(10,48,72,0.08);border-color:var(--blue-700)}
+textarea{min-height:90px}
+
+/* modern form controls */
+input[type=text],input[type=number],select,textarea{font-weight:500}
+input::placeholder,textarea::placeholder{color:#98a7b2}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:8px;border:none;background:var(--blue-900);color:#fff;font-weight:700;cursor:pointer;transition:transform .12s,box-shadow .12s,background .12s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.btn.orange{background:var(--accent);color:#ffffff}
+.btn.ghost{background:transparent;color:var(--blue-700);border:1px solid var(--line)}
+.btn.small{padding:6px 10px;font-size:13px}
+.btn.danger{background:var(--danger)}
+.btn:active{transform:translateY(-1px)}
+.btn.round{border-radius:999px}
+
+/* Tables modernized */
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+thead th{background:var(--blue-900);color:#fff;font-weight:700;padding:14px 16px;text-align:left;border-bottom:2px solid rgba(255,255,255,0.06)}
+tbody tr{background:var(--surface);transition:background .12s}
+tbody tr:hover{background:linear-gradient(90deg, rgba(10,30,45,0.02), transparent)}
+td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+.gut-score{font-weight:800;color:var(--blue-700)}
+.stamp{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:6px 12px;min-width:88px;line-height:1;font-weight:700;font-size:13px;border-radius:999px;position:relative;box-sizing:border-box}
+.stamp.hi{background:linear-gradient(90deg, rgba(194,59,51,0.12), rgba(194,59,51,0.03));color:var(--danger)}
+.stamp.mid{background:linear-gradient(90deg, rgba(244,123,32,0.10), rgba(244,123,32,0.02));color:var(--accent)}
+.stamp.lo{background:linear-gradient(90deg, rgba(31,122,77,0.08), rgba(31,122,77,0.02));color:#1f7a4d}
+
+/* Ensure GUT priority column has room for badges */
+#view-gut table th:nth-child(6),
+#view-gut table td:nth-child(6){
+  width:140px;min-width:120px;max-width:200px;padding:12px 14px;white-space:nowrap;vertical-align:middle;
+}
+
+/* Flow track */
+.flow-track{display:flex;gap:12px;overflow-x:auto;padding:20px 6px}
+.flow-step{min-width:180px;border-radius:12px;padding:16px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-sm);transition:transform .12s,box-shadow .12s}
+.flow-step:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
+
+/* Panel / Modal */
+.overlay{position:fixed;inset:0;background:rgba(3,10,18,0.5);display:none;z-index:100}
+.overlay.open{display:block}
+/* Panel/modal hidden by default; only visible when .open is added by JS */
+.panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.98);width:min(900px,94vw);max-height:90vh;overflow:auto;background:var(--surface);border-radius:12px;box-shadow:var(--shadow-md);z-index:101;padding:0;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
+.panel.open{display:block;opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);animation:panelIn .18s ease both}
+@keyframes panelIn{from{opacity:0;transform:translate(-50%,-50%) scale(.98)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.panel-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.panel-head h3{margin:0;font-size:16px}
+.panel-head button.close{margin-left:auto;background:transparent;border:1px solid var(--line);padding:8px 10px;border-radius:8px;cursor:pointer}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--blue-900);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow-sm);opacity:0;transform:translateY(8px);transition:all .18s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+/* Responsive adjustments */
+@media(max-width:1100px){
+  .grid-2{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  nav.tabs{width:72px;padding:12px}
+  nav.tabs::before{display:none}
+  nav.tabs button{justify-content:center;padding:10px}
+  nav.tabs button span{display:none}
+  main.content{padding:18px}
+  main.content{max-width:100%}
+  .mobile-menu-btn{display:inline-block}
+}
+
+@media(max-width:600px){
+  /* sidebar collapses to hidden drawer; toggle with button */
+  .app-body{flex-direction:column}
+  nav.tabs{position:fixed;left:0;top:0;height:100vh;width:260px;transform:translateX(-110%);transition:transform .22s ease;background:var(--blue-800);padding:18px;z-index:150}
+  nav.tabs.open{transform:translateX(0)}
+  /* overlay when nav is open */
+  nav.tabs .close-dummy{display:none}
+  main.content{padding:14px}
+  .mobile-menu-btn{display:inline-block}
+}
+
+@media(min-width:601px){
+  .mobile-menu-btn{display:none}
+}
+
+@media print{header,nav.tabs,.panel-head,.btn,.overlay,.no-print{display:none !important}.panel{position:static;width:auto;box-shadow:none}}
+
+/* PDCA grid visuals */
+.pdca-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:14px}
+.pdca-quad{background:var(--surface);padding:18px;border-radius:12px;border:1px solid var(--line);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.pdca-quad .letter{background:linear-gradient(135deg,var(--blue-700),var(--blue-500));color:#fff;padding:10px;border-radius:10px;font-weight:700;font-family:var(--font-display);font-size:18px}
+.pdca-quad h4{margin:0;font-size:15px;color:var(--blue-700)}
+.pdca-quad .stat{font-size:22px;font-weight:800;color:var(--blue-900)}
+.pdca-cycle-note{margin-top:8px;color:var(--muted)}
+
+/* Why chain styling */
+.why-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.why-num{width:40px;height:40px;border-radius:8px;background:var(--blue-700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.why-body{flex:1}
+
+/* Ishikawa categories */
+.ishi-cat{display:flex;flex-direction:column;gap:8px;border-radius:10px;padding:12px;border:1px dashed var(--line);background:linear-gradient(180deg, rgba(255,255,255,0.6), transparent)}
+
+/* small helper animations */
+.fade-in{animation:fadeIn .28s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* small visual tweaks for empty states */
+.empty{padding:18px;border-radius:10px;background:linear-gradient(180deg, #fbfdff, #fcfeff);border:1px dashed var(--line);color:var(--muted)}

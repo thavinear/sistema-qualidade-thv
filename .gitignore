@@ -1,9 +1,42 @@
-sistema-qualidade/frontend/node_modules/
-sistema-qualidade/backend/sistema-qualidade/.gradle/
-sistema-qualidade/backend/sistema-qualidade/build/
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Build / dist
+dist/
+build/
+.gradle/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Java
 *.class
+*.jar
+*.war
+*.ear
+
+# Env / secrets
 .env
+.env.local
+.env.*.local
+
+# Logs
 *.log
 
-frontend/node_modules/
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
 
+# Vite
+.vite/

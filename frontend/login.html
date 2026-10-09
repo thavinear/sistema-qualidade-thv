@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#00284d">
+  <title>Entrar | SGQ SENAC</title>
+  <link rel="stylesheet" href="./src/auth.css">
+</head>
+<body class="auth-page" data-page="login">
+  <main class="login-shell">
+    <section class="login-card" aria-labelledby="login-title">
+      <div class="login-logo-wrap"><img class="login-logo" src="./assets/senac-logo.svg" alt="SENAC"><span class="login-logo-fallback" hidden>SENAC</span></div>
+      <p class="auth-eyebrow">Sistema Integrado de Gestão da Qualidade</p>
+      <h1 id="login-title">Acesse sua conta</h1>
+      <p class="auth-subtitle">Entre para continuar no SGQ SENAC.</p>
+
+      <form id="loginForm" novalidate>
+        <div class="auth-field">
+          <label for="loginEmail">E-mail</label>
+          <input id="loginEmail" name="email" type="email" autocomplete="username" required aria-describedby="loginMessage" autofocus>
+        </div>
+        <div class="auth-field">
+          <label for="loginPassword">Senha</label>
+          <input id="loginPassword" name="password" type="password" autocomplete="current-password" required aria-describedby="loginMessage">
+        </div>
+        <p id="loginMessage" class="auth-message" role="alert" aria-live="polite"></p>
+        <button id="loginSubmit" class="auth-primary" type="submit">Entrar</button>
+      </form>
+
+      <button id="forgotPassword" class="auth-link" type="button">Esqueci minha senha</button>
+      <p id="defaultAdminNotice" class="admin-notice" hidden>
+        Primeiro acesso? Admin padrão: <strong>admin@sgqsenac.com</strong> / <strong>admin123</strong>
+      </p>
+      <p class="auth-footer">Acesso restrito a usuários cadastrados.</p>
+    </section>
+  </main>
+  <script src="./src/auth.js"></script>
+</body>
+</html>

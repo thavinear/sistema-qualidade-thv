@@ -1,0 +1,23 @@
+﻿# Dependências
+node_modules/
+package-lock.json
+
+# Build
+dist/
+build/
+
+# Testes automatizados (Cypress)
+cypress/
+cypress.config.js
+
+# Evidências e prints
+evidencias/
+evidencias-final/
+*.zip
+
+# Arquivos de sistema e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

@@ -1,0 +1,191 @@
+﻿<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SGQ SENAC - Sistema de Gestão da Qualidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap">
+<style>
+:root {
+  --bg: #eef2f6; --bg-grid: #c7d2dc; --surface: #ffffff; --border: #c7d2dc; --border-dark: #a3b4c5;
+  --navy: #00284d; --navy-mid: #00457c; --navy-soft: #003b64; --navy-muted: rgba(0,40,77,0.07);
+  --orange: #f47b20; --orange-dark: #d9660f; --orange-soft: rgba(244,123,32,0.12); --orange-glow: rgba(244,123,32,0.25);
+  --text: #152233; --text-mid: #2d4259; --text-muted: #4c5c6e; --text-subtle: #6b7f94;
+  --shadow-sm: 0 2px 8px rgba(0,40,77,0.08); --shadow-md: 0 6px 24px rgba(0,40,77,0.12);
+  --radius: 3px; --radius-lg: 6px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; font-family: 'IBM Plex Sans', Arial, sans-serif; font-size: 15px; line-height: 1.6;
+  color: var(--text); background-color: var(--bg);
+  background-image: linear-gradient(var(--bg-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+a { text-decoration: none; color: inherit; }
+.site-header { background: var(--navy); border-bottom: 3px solid var(--orange); }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.logo-block { display: flex; align-items: center; gap: 14px; }
+.logo-mark { width: 42px; height: 42px; background: var(--orange); border-radius: var(--radius); display: grid; place-items: center; }
+.logo-mark svg { width: 24px; height: 24px; fill: #fff; }
+.logo-title { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 0.03em; line-height: 1; }
+.logo-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.55); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1; }
+.header-cta { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 20px; background: var(--orange); color: #fff; font-size: 13px; font-weight: 600; border-radius: var(--radius); border: none; cursor: pointer; }
+.header-cta:hover { background: var(--orange-dark); }
+.header-cta svg { width: 15px; height: 15px; fill: #fff; }
+.hero { padding: 72px 24px; }
+.hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+.hero-eyebrow { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy-mid); background: var(--navy-muted); border: 1px solid var(--border); border-left: 3px solid var(--orange); padding: 5px 10px; margin-bottom: 20px; }
+.hero-heading { font-family: 'Oswald', sans-serif; font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 600; color: var(--navy); line-height: 1.1; margin: 0 0 20px; }
+.hero-heading mark { background: none; color: var(--orange); }
+.hero-lead { font-size: 16px; line-height: 1.75; color: var(--text-muted); margin: 0 0 32px; max-width: 520px; }
+.cta-primary { display: inline-flex; align-items: center; gap: 10px; height: 50px; padding: 0 28px; background: var(--orange); color: #fff; font-size: 15px; font-weight: 600; border-radius: var(--radius); border: none; cursor: pointer; box-shadow: 0 4px 16px var(--orange-glow); }
+.cta-primary:hover { background: var(--orange-dark); }
+.cta-primary svg { width: 18px; height: 18px; fill: #fff; }
+.hero-stats { display: flex; gap: 32px; margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--border); }
+.stat { display: flex; flex-direction: column; gap: 2px; }
+.stat-number { font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 700; color: var(--navy); line-height: 1; }
+.stat-label { font-size: 11px; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'IBM Plex Mono', monospace; }
+.hero-visual { display: flex; justify-content: center; align-items: center; }
+.pdca-wheel { width: 260px; height: 260px; }
+.section { padding: 64px 24px; }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
+.section-title { font-family: 'Oswald', sans-serif; font-size: clamp(1.6rem, 2.8vw, 2.2rem); font-weight: 600; color: var(--navy); margin: 0 0 10px; }
+.section-desc { font-size: 15px; color: var(--text-muted); max-width: 580px; line-height: 1.7; margin: 0 0 44px; }
+.tools-bg { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.tool-card { background: var(--bg); border: 1px solid var(--border); border-top: 3px solid var(--orange); border-radius: var(--radius-lg); padding: 28px 24px; }
+.tool-card:hover { box-shadow: var(--shadow-md); }
+.tool-icon { width: 44px; height: 44px; background: var(--orange-soft); border-radius: var(--radius); display: grid; place-items: center; margin-bottom: 18px; }
+.tool-icon svg { width: 22px; height: 22px; fill: var(--orange); }
+.tool-name { font-family: 'Oswald', sans-serif; font-size: 17px; font-weight: 600; color: var(--navy); margin: 0 0 4px; }
+.tool-full { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-subtle); text-transform: uppercase; margin: 0 0 12px; }
+.tool-desc { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+.steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.step { background: var(--surface); padding: 32px 28px; }
+.step-num { font-family: 'Oswald', sans-serif; font-size: 48px; font-weight: 700; color: var(--border); line-height: 1; margin-bottom: 16px; }
+.step-title { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+.step-text { font-size: 13.5px; line-height: 1.65; color: var(--text-muted); margin: 0; }
+.cta-strip { background: var(--navy); padding: 64px 24px; text-align: center; }
+.cta-strip-heading { font-family: 'Oswald', sans-serif; font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 600; color: #fff; margin: 0 0 14px; }
+.cta-strip-sub { font-size: 15px; color: rgba(255,255,255,0.55); margin: 0 0 36px; }
+.cta-large { display: inline-flex; align-items: center; gap: 12px; height: 56px; padding: 0 36px; background: var(--orange); color: #fff; font-size: 16px; font-weight: 600; border-radius: var(--radius); border: none; cursor: pointer; }
+.cta-large:hover { background: var(--orange-dark); }
+.cta-large svg { width: 18px; height: 18px; fill: #fff; }
+.site-footer { background: var(--navy); padding: 20px 24px; display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.3); }
+@media (max-width: 720px) { .hero-inner { grid-template-columns: 1fr; } .hero-visual { display: none; } .steps-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></div>
+      <div><span class="logo-title">SGQ SENAC</span><br><span class="logo-sub">Sistema de Gestão da Qualidade</span></div>
+    </div>
+    <a href="login.html" class="header-cta"><svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg> Acessar o Sistema</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-eyebrow">Projeto Integrador — SENAC</span>
+      <h1 class="hero-heading">Bem-vindo ao SGQ&nbsp;<mark>SENAC</mark></h1>
+      <p class="hero-lead">O Sistema Integrado de Gestão da Qualidade reúne as principais ferramentas de análise e melhoria contínua para alunos e colaboradores do SENAC. Identifique problemas, priorize ações e acompanhe resultados em um único lugar.</p>
+      <a href="login.html" class="cta-primary"><svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg> Acessar o Sistema</a>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-number">4</span><span class="stat-label">Ferramentas</span></div>
+        <div class="stat"><span class="stat-number">PDCA</span><span class="stat-label">Ciclo de melhoria</span></div>
+        <div class="stat"><span class="stat-number">SGQ</span><span class="stat-label">Gestão integrada</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <svg class="pdca-wheel" viewBox="0 0 260 260">
+        <circle cx="130" cy="130" r="118" stroke="var(--border)" stroke-width="1.5" fill="var(--surface)"/>
+        <path d="M130 130 L130 15 A115 115 0 0 0 15 130 Z" fill="var(--navy)" opacity="0.9"/>
+        <path d="M130 130 L245 130 A115 115 0 0 0 130 15 Z" fill="var(--navy-mid)" opacity="0.9"/>
+        <path d="M130 130 L130 245 A115 115 0 0 0 245 130 Z" fill="var(--orange)" opacity="0.9"/>
+        <path d="M130 130 L15 130 A115 115 0 0 0 130 245 Z" fill="var(--orange-dark)" opacity="0.9"/>
+        <circle cx="130" cy="130" r="38" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="130" y="126" text-anchor="middle" font-family="Oswald" font-size="13" font-weight="700" fill="var(--navy)">PDCA</text>
+        <text x="130" y="142" text-anchor="middle" font-family="IBM Plex Sans" font-size="9" fill="var(--text-subtle)">Ciclo de Melhoria</text>
+        <text x="80" y="85" text-anchor="middle" font-family="Oswald" font-size="20" font-weight="700" fill="white">P</text>
+        <text x="80" y="102" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="rgba(255,255,255,0.7)">PLAN</text>
+        <text x="180" y="85" text-anchor="middle" font-family="Oswald" font-size="20" font-weight="700" fill="white">D</text>
+        <text x="180" y="102" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="rgba(255,255,255,0.7)">DO</text>
+        <text x="180" y="176" text-anchor="middle" font-family="Oswald" font-size="20" font-weight="700" fill="white">C</text>
+        <text x="180" y="193" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="rgba(255,255,255,0.7)">CHECK</text>
+        <text x="80" y="176" text-anchor="middle" font-family="Oswald" font-size="20" font-weight="700" fill="white">A</text>
+        <text x="80" y="193" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="rgba(255,255,255,0.7)">ACT</text>
+        <line x1="130" y1="15" x2="130" y2="245" stroke="var(--surface)" stroke-width="2"/>
+        <line x1="15" y1="130" x2="245" y2="130" stroke="var(--surface)" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="tools-bg section">
+  <div class="section-inner">
+    <p class="section-label">Ferramentas disponíveis</p>
+    <h2 class="section-title">Metodologias da Qualidade</h2>
+    <p class="section-desc">Quatro ferramentas consagradas da gestão da qualidade, integradas em um sistema único.</p>
+    <div class="tools-grid">
+      <article class="tool-card">
+        <div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M3 5v14h18V5H3zm4 2v2H5V7h2zm0 4v2H5v-2h2zm0 4v2H5v-2h2zm12 2H9v-2h10v2zm0-4H9v-2h10v2zm0-4H9V7h10v2z"/></svg></div>
+        <h3 class="tool-name">Matriz GUT</h3>
+        <p class="tool-full">Gravidade · Urgência · Tendência</p>
+        <p class="tool-desc">Priorize problemas com base em quão grave é, com qual urgência precisa ser resolvido e qual a tendência de piora.</p>
+      </article>
+      <article class="tool-card">
+        <div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
+        <h3 class="tool-name">5W2H</h3>
+        <p class="tool-full">What · Why · Where · When · Who · How · How Much</p>
+        <p class="tool-desc">Estruture um plano de ação completo respondendo sete perguntas essenciais.</p>
+      </article>
+      <article class="tool-card">
+        <div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></div>
+        <h3 class="tool-name">Ciclo PDCA</h3>
+        <p class="tool-full">Plan · Do · Check · Act</p>
+        <p class="tool-desc">O ciclo de melhoria contínua mais utilizado no mundo.</p>
+      </article>
+      <article class="tool-card">
+        <div class="tool-icon"><svg viewBox="0 0 24 24"><path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22v-2z"/></svg></div>
+        <h3 class="tool-name">Ishikawa</h3>
+        <p class="tool-full">Diagrama de Causa e Efeito</p>
+        <p class="tool-desc">Mapeie visualmente as causas raiz de um problema.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <p class="section-label">Como funciona</p>
+    <h2 class="section-title">Do problema à solução em três etapas</h2>
+    <p class="section-desc">O SGQ SENAC guia você por um processo estruturado.</p>
+    <div class="steps-row">
+      <div class="step"><div class="step-num">01</div><h3 class="step-title">Identifique o Problema</h3><p class="step-text">Use a Matriz GUT e o Diagrama de Ishikawa para mapear o problema mais crítico.</p></div>
+      <div class="step"><div class="step-num">02</div><h3 class="step-title">Planeje a Solução</h3><p class="step-text">Monte um plano de ação detalhado com o 5W2H, definindo responsáveis e prazos.</p></div>
+      <div class="step"><div class="step-num">03</div><h3 class="step-title">Execute e Monitore</h3><p class="step-text">Aplique o Ciclo PDCA para executar, verificar e consolidar as melhorias.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-strip">
+  <div class="section-inner">
+    <h2 class="cta-strip-heading">Acesse o SGQ SENAC e comece a melhorar hoje</h2>
+    <p class="cta-strip-sub">Faça login com seu e-mail institucional para acessar todas as ferramentas.</p>
+    <a href="login.html" class="cta-large"><svg viewBox="0 0 24 24"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg> Acessar o Sistema</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <span>SGQ SENAC</span>
+  <span>Sistema Integrado de Gestão da Qualidade · Projeto Integrador</span>
+</footer>
+
+</body>
+</html>

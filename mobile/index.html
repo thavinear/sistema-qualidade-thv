@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<!-- viewport-fit=cover habilita env(safe-area-inset-*) (notch do iPhone / barra de gestos do Android) -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#00284d">
+<title>SGQ SENAC | Sistema Integrado de Gestão da Qualidade</title>
+<link rel="icon" href="assets/senac-logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Ícones inline (sem biblioteca): <use href="#i-nome"> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-flow" viewBox="0 0 24 24"><path d="M3 3h6v5H3zM15 3h6v5h-6zM9 16h6v5H9zM6 8v4h12V8M12 12v4"/></symbol>
+  <symbol id="i-plan" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M3 6l1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 16"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z"/></symbol>
+</svg>
+
+<header class="app-header" id="appHeader">
+  <img src="assets/senac-logo.png" alt="SENAC">
+  <div class="titles">
+    <span class="eyebrow">Engenharia da Qualidade</span>
+    <h1>Gestão da Qualidade</h1>
+  </div>
+  <div class="doc-code"><b>SGQ-SENAC-01</b>Rev. 01 &middot; <span id="hdrDate"></span></div>
+</header>
+
+<div class="app-body">
+  <!-- Drawer no mobile / sidebar no desktop (mesmo elemento; ver style.css) -->
+  <nav id="side" aria-label="Módulos">
+    <div class="side-head"><span>Módulos</span>
+      <button class="icon" id="closeSide" aria-label="Fechar menu de módulos"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div id="sideLinks"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section class="view" id="view-dashboard" aria-labelledby="t-dashboard">
+      <h2 class="view-title" id="t-dashboard">Painel PDCA <span class="tag">Visão geral</span></h2>
+      <p class="view-desc">O ciclo PDCA amarra todas as ferramentas: o que é planejado vira ação no 5W2H, é executado via Fluxograma/POP, verificado no Checklist e volta aqui.</p>
+      <div id="dash"><div class="skeleton"></div><div class="skeleton"></div></div>
+    </section>
+
+    <section class="view" id="view-fluxo" aria-labelledby="t-fluxo">
+      <h2 class="view-title" id="t-fluxo">Fluxograma <span class="tag">Etapa 01</span></h2>
+      <p class="view-desc">Cadastre as etapas do processo. Toque numa etapa para abrir o POP e o Checklist dela.</p>
+      <ol class="steps" id="flowList"></ol>
+      <button class="btn orange block" data-act="flow-add"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Nova etapa</button>
+    </section>
+
+    <section class="view" id="view-pop" aria-labelledby="t-pop">
+      <h2 class="view-title" id="t-pop">POP <span class="tag">Procedimento</span></h2>
+      <div id="popBox"></div>
+    </section>
+
+    <section class="view" id="view-checklist" aria-labelledby="t-checklist">
+      <h2 class="view-title" id="t-checklist">Checklist <span class="tag">Verificação</span></h2>
+      <div id="ckBox"></div>
+    </section>
+
+    <section class="view" id="view-gut" aria-labelledby="t-gut">
+      <h2 class="view-title" id="t-gut">Matriz GUT <span class="tag">Etapa 01</span></h2>
+      <p class="view-desc">Gravidade &times; Urgência &times; Tendência. O score é calculado e a lista ordena do mais crítico ao menos crítico.</p>
+      <ul class="list cols" id="gutList"></ul>
+      <button class="btn orange block" data-act="gut-add"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar problema</button>
+    </section>
+
+    <section class="view" id="view-pareto" aria-labelledby="t-pareto">
+      <h2 class="view-title" id="t-pareto">Pareto <span class="tag">80/20</span></h2>
+      <p class="view-desc">Liste causas e frequências. O gráfico ordena do maior para o menor, com curva acumulada e linha de 80%.</p>
+      <div class="pareto-grid">
+        <div>
+          <ul class="list" id="parList"></ul>
+          <button class="btn orange block" data-act="par-add" style="margin-bottom:14px"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar causa</button>
+        </div>
+        <div class="card"><h3>Gráfico 80/20</h3><div id="pChart"></div><ul class="legend" id="pLeg"></ul></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-ishikawa" aria-labelledby="t-ishikawa">
+      <h2 class="view-title" id="t-ishikawa">Ishikawa <span class="tag">6M</span></h2>
+      <p class="view-desc">Defina o problema (cabeça do peixe) e mapeie as causas em cada um dos 6M.</p>
+      <div class="card fish-head"><label class="f"><span>Problema central</span>
+        <input type="text" id="ishiP" data-k="ishiP" placeholder="Ex.: retrabalho acima de 8% na embalagem"></label></div>
+      <div class="spine" id="ishiCats"></div>
+    </section>
+
+    <section class="view" id="view-porques" aria-labelledby="t-porques">
+      <h2 class="view-title" id="t-porques">5 Porquês <span class="tag">Etapa 02</span></h2>
+      <p class="view-desc">Parta do problema e responda &ldquo;por quê?&rdquo; até chegar à causa raiz.</p>
+      <div class="card"><label class="f"><span>Problema</span>
+        <input type="text" id="whyP" data-k="whyP" placeholder="Descreva o problema observado"></label></div>
+      <div class="card"><h3>Cascata de investigação</h3><div id="whyChain"></div></div>
+    </section>
+
+    <section class="view" id="view-w2h" aria-labelledby="t-w2h">
+      <h2 class="view-title" id="t-w2h">Plano 5W2H <span class="tag">Etapa 03</span></h2>
+      <p class="view-desc">Nenhuma ação sem dono, prazo e motivo. Ações do Checklist e dos 5 Porquês chegam aqui automaticamente.</p>
+      <div class="filters">
+        <label class="f"><span>Responsável</span><select id="w2hFWho" data-k="w2hF"><option value="">Todos</option></select></label>
+        <label class="f"><span>Status</span><select id="w2hFSt" data-k="w2hF"><option value="">Todos</option><option>A iniciar</option><option>Em andamento</option><option>Concluído</option><option>Atrasado</option></select></label>
+      </div>
+      <ul class="list cols" id="w2hList"></ul>
+      <button class="btn orange block" data-act="w2h-add"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar ação</button>
+    </section>
+
+    <section class="view" id="view-relatorios" aria-labelledby="t-relatorios">
+      <h2 class="view-title" id="t-relatorios">Relatórios <span class="tag">Consolidado</span></h2>
+      <p class="view-desc">Resumo de todos os módulos, somente leitura. Filtre por tipo e status.</p>
+      <div id="relBox"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Bottom navigation: 5 itens. "Módulos" abre o drawer com os 10 módulos. -->
+<nav class="bnav" id="bnav" aria-label="Navegação principal">
+  <a href="#dashboard" data-v="dashboard"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>Painel</a>
+  <a href="#fluxo" data-v="fluxo"><svg class="i" aria-hidden="true"><use href="#i-flow"/></svg>Fluxograma</a>
+  <a href="#w2h" data-v="w2h"><svg class="i" aria-hidden="true"><use href="#i-plan"/></svg>5W2H</a>
+  <a href="#relatorios" data-v="relatorios"><svg class="i" aria-hidden="true"><use href="#i-report"/></svg>Relatórios</a>
+  <button type="button" id="bMore" aria-haspopup="dialog" aria-controls="side"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>Módulos</button>
+</nav>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetT">
+  <div class="sheet-h"><h3 id="sheetT"></h3>
+    <button class="icon" data-act="close" aria-label="Fechar"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+  <div class="sheet-b" id="sheetB"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

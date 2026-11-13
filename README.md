@@ -1,51 +1,65 @@
-# Sistema Integrado de Gestão da Qualidade — Frontend
+﻿# SGQ SENAC — Sistema de Gestão da Qualidade
 
-Frontend do SGQ SENAC em HTML, CSS e JavaScript vanilla, servido pelo Vite.
+Aplicação web para apoiar o ciclo PDCA e as ferramentas de gestão da qualidade: Matriz GUT, Pareto, Ishikawa, 5 Porquês, 5W2H, Fluxograma/POP e Checklist.
 
-## Como executar
+## Arquitetura
 
-Na pasta frontend, instale as dependências e inicie o servidor:
+- **Frontend:** HTML, CSS e JavaScript, servido e empacotado pelo Vite em frontend/.
+- **Backend:** Java 17 e Spring Boot em backend/sistema-qualidade/.
+- **API:** autenticação por cookie JWT em /api/auth e persistência de Workspace por usuário em /api/workspace.
+- **Banco:** PostgreSQL configurado por variáveis de ambiente. H2 é usado somente nos testes do backend.
+- A landing page e as telas autenticadas ficam em frontend/index.html, frontend/login.html e frontend/app.html.
 
-    npm install
-    npm run dev
+## Requisitos
 
-Acesse o endereço local informado pelo Vite. A autenticação usa Web Crypto SHA-256, disponível em contextos seguros como localhost. Abrir os arquivos diretamente pelo protocolo file:// pode impedir o uso de Web Crypto e não é recomendado.
+- Node.js 18 ou superior
+- Java 17 ou superior
+- PostgreSQL acessível para executar a aplicação
 
-## Primeiro acesso
+## Configuração
 
-Na primeira execução, o sistema cria o administrador padrão:
+Configure as variáveis abaixo no ambiente do backend:
 
-- E-mail: admin@sgqsenac.com
-- Senha: admin123
-- Perfil: Admin
+| Variável | Uso |
+| --- | --- |
+| DATABASE_URL | JDBC URL do PostgreSQL (padrão: jdbc:postgresql://localhost:5432/sgq) |
+| DB_USERNAME / DB_PASSWORD | Credenciais do banco |
+| JWT_SECRET | Segredo forte para assinatura dos cookies JWT |
+| JWT_EXPIRATION_SECONDS | Validade do token (padrão: 3600) |
+| AUTH_COOKIE_SECURE | Use false em desenvolvimento HTTP local; true em produção HTTPS |
+| AUTH_COOKIE_SAME_SITE | Política SameSite do cookie (padrão: Lax) |
+| FRONTEND_ORIGIN | Origem permitida pelo CORS (padrão: http://localhost:5173) |
 
-Redefina a senha pela gestão de usuários após o primeiro acesso. O aviso de credenciais padrão aparece na tela de login apenas quando a lista de usuários é criada pela primeira vez.
+Não use o segredo JWT padrão em produção. O acesso sem login (?mode=simple) é um modo demonstrativo que mantém os dados localmente no navegador.
 
-## Perfis e permissões
+## Executar localmente
 
-- **Admin:** acesso total aos módulos, gestão de usuários e configuração das permissões do perfil Usuário.
-- **Usuário:** acessa os módulos conforme as permissões de Ver, Editar e Excluir definidas pelo Admin.
-- Na gestão de usuários, o Admin pode criar, editar, ativar/desativar, excluir contas e redefinir senhas.
-- A aba Permissões permite configurar o perfil Usuário por módulo. As alterações são aplicadas imediatamente.
+Terminal 1 — backend:
 
-## Persistência e segurança
+```powershell
+cd backend\sistema-qualidade
+./gradlew bootRun
+```
 
-Os dados ficam somente no armazenamento local do navegador:
+O serviço escuta em http://localhost:8080. No Windows, use gradlew.bat bootRun.
 
-- sgq_senac_usuarios: contas e hashes das senhas.
-- sgq_senac_sessao: sessão do navegador atual.
-- sgq_senac_permissoes: permissões por módulo e perfil.
+Terminal 2 — frontend:
 
-As senhas são transformadas com SHA-256 no cliente usando Web Crypto. **Isso NÃO é seguro para produção real**: não há backend, controle de sessão no servidor ou proteção contra adulteração do localStorage. Esta implementação serve para demonstração, protótipo e uso interno controlado.
+```powershell
+cd frontend
+npm install
+npm run dev
+```
 
-Para produção real, implemente autenticação e autorização no backend, armazenamento seguro de senhas e banco de dados PostgreSQL. O projeto já declara PostgreSQL no build.gradle.
+Abra http://localhost:5173. O Vite encaminha /api ao backend em localhost:8080; cookies e proteção CSRF são enviados pelo cliente.
 
-## Roteiro de teste manual
+## Build
 
-1. Rode npm run dev e abra a aplicação; sem sessão, deve aparecer a página de login.
-2. Entre com admin@sgqsenac.com e admin123.
-3. Em Usuários, crie uma conta com nome, e-mail, perfil Usuário e senha inicial.
-4. Faça logout, entre com a conta criada e confirme que a gestão de usuários não aparece.
-5. Como Admin, abra Usuários > Permissões e desmarque, por exemplo, Editar em Matriz GUT para Usuário.
-6. Volte à conta Usuário e confirme que os controles de edição ficam desabilitados. Reative a permissão ao terminar.
-7. Faça logout e confirme que a sessão é removida. Recarregar a página com sessão válida mantém a conta conectada.
+```powershell
+cd frontend
+npm run build
+cd ..\backend\sistema-qualidade
+./gradlew build
+```
+
+No Windows, execute gradlew.bat build.

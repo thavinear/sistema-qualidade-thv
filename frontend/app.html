@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Integrado de Gestão da Qualidade | SENAC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --blue-900:#00284d;
+  --blue-800:#00457c;
+  --blue-700:#0a5a99;
+  --orange-600:#f47b20;
+  --orange-500:#f9a04f;
+  --tan-300:#f6c98d;
+  --paper:#eef2f6;
+  --panel:#ffffff;
+  --ink:#152233;
+  --ink-soft:#4c5c6e;
+  --line:#c7d2dc;
+  --danger:#b3382c;
+  --danger-bg:#fbe9e6;
+  --ok:#1f7a4d;
+  --ok-bg:#e7f5ee;
+  --warn-bg:#fdf1de;
+  --radius:3px;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --display:'Oswald',sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{margin:0;font-family:var(--sans);background:var(--paper);color:var(--ink);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:28px 28px;
+  background-attachment:fixed;
+  overflow-x:hidden;
+}
+::selection{background:var(--orange-500);color:#fff;}
+
+header.app-header{
+  background:var(--blue-900);
+  color:#fff;
+  display:flex;align-items:center;gap:16px;
+  padding:14px 24px;
+  border-bottom:5px solid var(--orange-600);
+  position:sticky;top:0;z-index:50;
+}
+header.app-header img{height:45px;width:auto;border-radius:2px;}
+header .titles{display:flex;flex-direction:column;line-height:1.15;}
+header .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tan-300);}
+header h1{font-family:var(--display);font-weight:600;font-size:20px;margin:2px 0 0;letter-spacing:.02em;}
+header .doc-code{margin-left:auto;font-family:var(--mono);font-size:11px;color:#cfe0ef;text-align:right;line-height:1.5;}
+header .doc-code b{color:#fff;display:block;font-size:12px;}
+.auth-account{
+  display:flex;align-items:center;gap:9px;margin-left:auto;color:#fff;
+}
+header.app-header .auth-account:not(:last-child){display:none;}
+.auth-account-name{font-size:12px;font-weight:600;}
+.auth-account-name small{display:block;color:#cfe0ef;font-size:10px;font-weight:400;}
+.auth-logout{
+  min-width:44px;min-height:44px;padding:7px 10px;border:1px solid rgba(255,255,255,.55);border-radius:2px;color:#fff;background:transparent;
+  font:600 12px var(--sans);cursor:pointer;
+}
+
+@media (min-width: 768px){
+  .app-body{display:flex;min-height:calc(100vh - 74px);width:100%;position:relative;}
+  .app-body > .no-print{
+    position:sticky;top:74px;z-index:30;
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    margin-left:220px;padding:12px 16px 0;width:calc(100% - 220px);
+    box-sizing:border-box;
+    overflow-x:auto;
+  }
+  .app-body > .no-print .btn{white-space:nowrap;flex:0 0 auto;}
+  nav.tabs{
+    position:fixed;top:74px;left:0;bottom:0;width:220px;flex:none;
+    background:var(--blue-800);
+    padding:18px 0;
+    display:flex;flex-direction:column;gap:2px;
+    z-index:35;
+    box-sizing:border-box;
+  }
+  main.content{
+    flex:1;
+    width:calc(100% - 220px);
+    margin-left:220px;
+    padding:28px 32px;
+    min-width:0;
+    box-sizing:border-box;
+  }
+  .card, .filter-bar, .row-actions, .grid-2, .grid-4, .pdca-grid, .ishi-cats, .flow-track {
+    box-sizing:border-box;
+    flex-wrap:wrap;
+  }
+}
+@media (min-width: 1025px){
+  .app-body{
+    display:grid !important;
+    grid-template-columns:220px minmax(0,1fr);
+    grid-template-rows:auto 1fr;
+    align-items:start;
+    width:100%;
+    min-height:100vh;
+  }
+  nav.tabs{
+    position:sticky;
+    top:74px;
+    left:auto;
+    bottom:auto;
+    grid-column:1;
+    grid-row:1 / span 2;
+    width:220px !important;
+    flex:none !important;
+    min-height:100vh !important;
+    height:calc(100vh - 74px);
+    background:var(--blue-800);
+  }
+  .app-body > .no-print{
+    position:relative;
+    top:auto;
+    grid-column:2;
+    grid-row:1;
+    display:flex !important;
+    align-items:center;
+    gap:8px !important;
+    width:auto;
+    max-width:none !important;
+    margin:0 0 20px !important;
+    padding:12px 30px 0 !important;
+    flex-wrap:wrap !important;
+    overflow:visible;
+  }
+  main.content{
+    grid-column:2;
+    grid-row:2;
+    flex:1 !important;
+    width:auto !important;
+    max-width:none;
+    margin:0 !important;
+    padding:20px 30px !important;
+    min-width:0 !important;
+  }
+}
+nav.tabs button{
+  all:unset;cursor:pointer;
+  font-family:var(--sans);font-weight:500;font-size:13.5px;color:#dce8f2;
+  padding:12px 20px;border-left:4px solid transparent;
+  display:flex;align-items:center;gap:10px;
+}
+nav.tabs button .num{font-family:var(--mono);font-size:11px;color:var(--tan-300);}
+nav.tabs button:hover{background:rgba(255,255,255,.06);}
+nav.tabs button.active{background:var(--paper);color:var(--blue-900);border-left-color:var(--orange-600);font-weight:600;}
+nav.tabs button.active .num{color:var(--orange-600);}
+
+main.content{flex:1;padding:28px 32px;max-width:none;margin-left:0;width:100%;min-width:0;box-sizing:border-box;}
+section.view{display:none;}
+section.view.active{display:block;animation:fadein .18s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+h2.view-title{
+  font-family:var(--display);font-size:24px;font-weight:600;color:var(--blue-900);
+  margin:0 0 4px;display:flex;align-items:center;gap:10px;
+}
+h2.view-title .tag{font-family:var(--mono);font-size:11px;background:var(--orange-600);color:#fff;padding:3px 8px;border-radius:2px;letter-spacing:.05em;}
+p.view-desc{color:var(--ink-soft);font-size:13.5px;margin:0 0 22px;max-width:760px;}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:20px;box-shadow:0 1px 0 rgba(0,0,0,.03);}
+.card h3{font-family:var(--display);font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--blue-800);margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--paper);}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:1000px){.grid-2,.grid-4{grid-template-columns:1fr;}}
+
+label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em;}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;font-family:var(--sans);font-size:13.5px;padding:8px 10px;
+  border:1px solid var(--line);border-radius:2px;background:#fbfcfd;color:var(--ink);
+}
+textarea{resize:vertical;min-height:64px;}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--orange-600);outline-offset:1px;}
+
+.btn{
+  font-family:var(--sans);font-weight:600;font-size:12.5px;letter-spacing:.02em;
+  background:var(--blue-800);color:#fff;border:none;padding:9px 16px;border-radius:2px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{background:var(--blue-700);}
+.btn.orange{background:var(--orange-600);}
+.btn.orange:hover{background:#e06f14;}
+.btn.ghost{background:transparent;color:var(--blue-800);border:1px solid var(--line);}
+.btn.ghost:hover{background:var(--paper);}
+.btn.danger{background:var(--danger);}
+.btn.small{padding:5px 10px;font-size:11.5px;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--blue-900);color:#fff;text-align:left;padding:8px 10px;font-weight:500;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.03em;}
+td{padding:7px 10px;border-bottom:1px solid var(--paper);vertical-align:middle;}
+tr:nth-child(even) td{background:#f8fafc;}
+td input,td select{font-size:12.5px;padding:5px 7px;}
+
+.stamp{display:inline-block;font-family:var(--mono);font-weight:600;font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:2px;text-transform:uppercase;}
+.stamp.hi{background:var(--danger-bg);color:var(--danger);}
+.stamp.mid{background:var(--warn-bg);color:#8a5a12;}
+.stamp.lo{background:var(--ok-bg);color:var(--ok);}
+
+.empty{border:1px dashed var(--line);border-radius:2px;padding:24px;text-align:center;color:var(--ink-soft);font-size:13px;background:#fbfcfd;}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-family:var(--mono);background:var(--paper);border:1px solid var(--line);padding:3px 9px;border-radius:20px;color:var(--ink-soft);}
+.row-actions{display:flex;gap:6px;}
+.small-icon-btn{background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:15px;padding:2px 6px;}
+.small-icon-btn:hover{color:var(--danger);}
+
+.pdca-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;}
+.pdca-quad{border-radius:var(--radius);padding:18px 20px;color:#fff;min-height:170px;position:relative;overflow:hidden;}
+.pdca-quad .letter{font-family:var(--display);font-size:44px;font-weight:700;position:absolute;right:12px;top:6px;opacity:.22;}
+.pdca-quad h4{font-family:var(--display);font-size:15px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px;}
+.pdca-quad .stat{font-family:var(--mono);font-size:26px;font-weight:600;}
+.pdca-quad .stat-label{font-size:11.5px;opacity:.85;}
+.pdca-quad ul{margin:8px 0 0;padding-left:16px;font-size:12px;}
+.pdca-quad.plan{background:var(--blue-800);}
+.pdca-quad.do{background:#0f6e5b;}
+.pdca-quad.check{background:var(--orange-600);}
+.pdca-quad.act{background:var(--danger);}
+.pdca-cycle-note{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-top:10px;text-align:center;}
+
+.flow-track{display:flex;align-items:center;gap:0;overflow-x:auto;padding:30px 6px 20px;}
+.flow-step{
+  flex:none;width:168px;min-height:96px;background:#fff;border:2px solid var(--blue-800);border-radius:4px;
+  padding:12px 14px;cursor:pointer;position:relative;transition:transform .12s;
+}
+.flow-step:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(0,40,77,.15);}
+.flow-step.decision{border-radius:4px;border-color:var(--orange-600);background:#fffaf3;}
+.flow-step .step-idx{font-family:var(--mono);font-size:10px;color:var(--orange-600);font-weight:600;}
+.flow-step .step-name{font-family:var(--display);font-size:14px;font-weight:600;color:var(--blue-900);margin:4px 0 2px;}
+.flow-step .step-resp{font-size:11px;color:var(--ink-soft);}
+.flow-step .step-badges{position:absolute;bottom:8px;right:8px;display:flex;gap:4px;}
+.flow-step .badge-dot{width:8px;height:8px;border-radius:50%;}
+.flow-arrow{flex:none;width:36px;height:2px;background:var(--blue-800);position:relative;}
+.flow-arrow::after{content:'';position:absolute;right:0;top:-4px;border:5px solid transparent;border-left-color:var(--blue-800);}
+.flow-add{flex:none;width:150px;min-height:96px;border:2px dashed var(--line);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);cursor:pointer;font-size:12.5px;font-weight:600;background:transparent;}
+.flow-add:hover{border-color:var(--orange-600);color:var(--orange-600);}
+
+.overlay{position:fixed;inset:0;background:rgba(10,20,30,.42);display:none;z-index:100;}
+.overlay.open{display:block;}
+.panel{position:fixed;top:0;right:-720px;width:700px;max-width:94vw;height:100%;background:var(--paper);
+  box-shadow:-6px 0 24px rgba(0,0,0,.25);transition:right .22s ease;z-index:101;display:flex;flex-direction:column;}
+.panel.open{right:0;}
+.panel-head{background:var(--blue-900);color:#fff;padding:16px 22px;display:flex;align-items:center;gap:12px;border-bottom:4px solid var(--orange-600);}
+.panel-head h3{font-family:var(--display);font-size:17px;margin:0;flex:1;}
+.panel-head button.close{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;font-size:13px;padding:5px 10px;border-radius:2px;cursor:pointer;}
+.panel-subtabs{display:flex;background:var(--blue-800);}
+.panel-subtabs button{all:unset;cursor:pointer;flex:1;text-align:center;padding:10px;font-size:12.5px;font-weight:600;color:#cfe0ef;font-family:var(--sans);border-bottom:3px solid transparent;}
+.panel-subtabs button.active{color:#fff;border-bottom-color:var(--orange-600);background:rgba(255,255,255,.06);}
+.panel-body{flex:1;overflow-y:auto;padding:20px 22px;}
+.panel-sub{display:none;}
+.panel-sub.active{display:block;}
+
+.pop-doc{background:#fff;border:1px solid var(--line);}
+.pop-doc-head{display:grid;grid-template-columns:2fr 1fr;border-bottom:2px solid var(--blue-900);}
+.pop-doc-head .titleblock{padding:14px 16px;border-right:1px solid var(--line);}
+.pop-doc-head .titleblock small{font-family:var(--mono);color:var(--ink-soft);text-transform:uppercase;font-size:10px;}
+.pop-doc-head .meta{padding:14px 16px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);}
+.pop-doc-head .meta div{display:flex;justify-content:space-between;margin-bottom:4px;}
+.pop-section{padding:14px 16px;border-bottom:1px solid var(--paper);}
+.pop-section label{margin-bottom:6px;}
+
+.check-item{background:#fff;border:1px solid var(--line);border-radius:2px;padding:12px 14px;margin-bottom:10px;}
+.check-item .ci-top{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;}
+.check-item .ci-text{font-size:13.5px;flex:1;}
+.ci-options{display:flex;gap:6px;flex:none;}
+.ci-options button{all:unset;cursor:pointer;font-family:var(--mono);font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:2px;border:1px solid var(--line);color:var(--ink-soft);}
+.ci-options button.ok.sel{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);}
+.ci-options button.no.sel{background:var(--danger-bg);color:var(--danger);border-color:var(--danger);}
+.ci-options button.na.sel{background:var(--paper);color:var(--ink-soft);border-color:var(--ink-soft);}
+.ci-just{margin-top:10px;}
+.conf-meter{background:#fff;border:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.conf-meter .bar{flex:1;height:10px;background:var(--paper);border-radius:6px;overflow:hidden;}
+.conf-meter .bar-fill{height:100%;background:var(--ok);}
+.conf-meter .pct{font-family:var(--mono);font-weight:600;font-size:18px;color:var(--ink);}
+
+.gut-score{font-family:var(--mono);font-weight:700;}
+.ishi-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px;}
+.ishi-cat{background:#fff;border:1px solid var(--line);border-top:4px solid var(--orange-600);border-radius:2px;padding:12px 14px;}
+.ishi-cat h5{font-family:var(--display);font-size:13px;margin:0 0 8px;color:var(--blue-900);text-transform:uppercase;}
+.ishi-cat ul{list-style:none;margin:0 0 8px;padding:0;font-size:12.5px;}
+.ishi-cat li{padding:5px 0;border-bottom:1px solid var(--paper);display:flex;justify-content:space-between;gap:6px;}
+.ishi-cat .add-row{display:flex;gap:6px;}
+.ishi-cat .add-row input{font-size:12px;padding:5px 7px;}
+
+.why-step{display:flex;gap:14px;margin-bottom:0;position:relative;padding-bottom:18px;}
+.why-step:not(:last-child)::before{content:'';position:absolute;left:15px;top:34px;bottom:0;width:2px;background:var(--line);}
+.why-num{flex:none;width:32px;height:32px;border-radius:50%;background:var(--blue-800);color:#fff;font-family:var(--mono);font-weight:600;display:flex;align-items:center;justify-content:center;font-size:13px;z-index:1;}
+.why-body{flex:1;}
+.why-body input{margin-bottom:6px;}
+
+.filter-bar{display:flex;gap:10px;margin-bottom:14px;align-items:flex-end;flex-wrap:wrap;}
+.filter-bar > div{min-width:150px;}
+
+.toast{position:fixed;bottom:22px;right:22px;background:var(--blue-900);color:#fff;padding:11px 18px;border-radius:2px;
+  font-size:13px;border-left:4px solid var(--orange-600);box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:200;
+  opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;}
+.toast.show{opacity:1;transform:none;}
+
+@media (max-width: 767px){
+  .app-body{display:block;min-height:calc(100vh - 74px);}
+  .app-body > .no-print{position:static;margin-left:0;width:100%;padding:12px 14px 0;}
+  nav.tabs{display:none !important;}
+  main.content{width:100%;max-width:none;margin-left:0;padding:20px 14px 28px;}
+}
+
+@media print{
+  header,nav.tabs,.panel-subtabs,.btn,.overlay,.no-print{display:none !important;}
+  .panel{position:static;width:auto;box-shadow:none;right:0;}
+  .panel-body{overflow:visible;}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <img src="/assets/senac-logo.png" alt="SENAC">
+  <div class="titles">
+    <span class="eyebrow">Engenharia da Qualidade &middot; Desenvolvimento de Sistemas</span>
+    <h1>Sistema Integrado de Gestão da Qualidade</h1>
+  </div>
+  <div class="doc-code"><b>SGQ-SENAC-01</b>Rev. 01 &middot; <span id="hdrDate"></span></div>
+  <div class="auth-account">
+    <div class="auth-account-name">
+      Administrador
+      <small>ADMIN</small>
+    </div>
+    <button type="button" class="auth-logout" onclick="fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'}).finally(()=>location.replace('./login.html'))">Sair</button>
+  </div>
+</header>
+
+<div class="app-body">
+  <div class="no-print" style="max-width:1200px;margin:12px auto;padding:0 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <a class="btn ghost" href="./index.html" aria-label="Voltar à página inicial">Início</a>
+    <button class="btn ghost" type="button" id="sgqHelpButton" aria-haspopup="dialog">Ajuda e acessibilidade</button>
+    <button class="btn ghost" type="button" id="sgqSaveButton">Salvar agora</button>
+    <button class="btn ghost" type="button" id="sgqExportButton">Exportar dados</button>
+    <button class="btn orange" type="button" id="sgqPdfButton">Gerar PDF / Imprimir</button>
+    <span id="sgqSaveStatus" role="status" aria-live="polite" style="font-size:13px;color:#425466">Dados salvos neste dispositivo</span>
+  </div>
+  <nav class="tabs" id="tabNav">
+    <button data-view="dashboard" class="active"><span class="num">00</span> Painel PDCA</button>
+    <button data-view="fluxo"><span class="num">01</span> Fluxograma</button>
+    <button data-view="gut"><span class="num">02</span> Matriz GUT</button>
+    <button data-view="pareto"><span class="num">03</span> Pareto</button>
+    <button data-view="ishikawa"><span class="num">04</span> Ishikawa</button>
+    <button data-view="porques"><span class="num">05</span> 5 Porquês</button>
+    <button data-view="w2h"><span class="num">06</span> Plano 5W2H</button>
+  </nav>
+
+  <main class="content">
+
+    <section class="view active" id="view-dashboard">
+      <h2 class="view-title">Painel PDCA <span class="tag">Visão Geral</span></h2>
+      <p class="view-desc">O ciclo PDCA amarra todas as ferramentas: o que é planejado no GUT/Pareto/Ishikawa vira ação no 5W2H, é executado no chão de fábrica via Fluxograma/POP, verificado no Checklist e retorna aqui como padronização ou nova ação.</p>
+      <div class="pdca-grid">
+        <div class="pdca-quad plan"><div class="letter">P</div>
+          <h4>Planejar</h4>
+          <div class="stat" id="pdcaPlanStat">0</div>
+          <div class="stat-label">problemas cadastrados na Matriz GUT</div>
+          <ul id="pdcaPlanTop"></ul>
+        </div>
+        <div class="pdca-quad do"><div class="letter">D</div>
+          <h4>Executar</h4>
+          <div class="stat" id="pdcaDoStat">0%</div>
+          <div class="stat-label">ações do 5W2H concluídas</div>
+          <ul id="pdcaDoList"></ul>
+        </div>
+        <div class="pdca-quad check"><div class="letter">C</div>
+          <h4>Verificar</h4>
+          <div class="stat" id="pdcaCheckStat">&mdash;</div>
+          <div class="stat-label">conformidade média dos checklists</div>
+          <ul id="pdcaCheckList"></ul>
+        </div>
+        <div class="pdca-quad act"><div class="letter">A</div>
+          <h4>Agir</h4>
+          <div class="stat" id="pdcaActStat">0</div>
+          <div class="stat-label">não conformidades em aberto</div>
+          <ul id="pdcaActList"></ul>
+        </div>
+      </div>
+      <p class="pdca-cycle-note">Planejar → Executar → Verificar → Agir → volta a Planejar</p>
+    </section>
+
+    <section class="view" id="view-fluxo">
+      <h2 class="view-title">Fluxograma de Processos <span class="tag">Etapa 01</span></h2>
+      <p class="view-desc">Cadastre as etapas do processo produtivo. Clique em uma etapa para abrir o POP e o Checklist vinculados a ela — é assim que o fluxograma, o POP e o checklist conversam entre si.</p>
+      <div class="card">
+        <h3>Mapa do processo</h3>
+        <div class="flow-track" id="flowTrack"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-gut">
+      <h2 class="view-title">Matriz GUT <span class="tag">Etapa 01</span></h2>
+      <p class="view-desc">Gravidade &times; Urgência &times; Tendência. Cadastre os problemas e o sistema calcula o score e ordena automaticamente do mais crítico para o menos crítico.</p>
+      <div class="card">
+        <h3>Problemas cadastrados</h3>
+        <table>
+          <thead><tr><th style="width:34%">Problema</th><th>Gravidade</th><th>Urgência</th><th>Tendência</th><th>Score</th><th>Prioridade</th><th></th></tr></thead>
+          <tbody id="gutBody"></tbody>
+        </table>
+        <div class="empty" id="gutEmpty" style="display:none;">Nenhum problema cadastrado ainda.</div>
+        <div style="margin-top:14px;"><button class="btn orange" onclick="gutAddRow()">+ Adicionar problema</button></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-pareto">
+      <h2 class="view-title">Gráfico de Pareto <span class="tag">Etapa 01 &middot; 80/20</span></h2>
+      <p class="view-desc">Liste as causas/defeitos e a frequência de ocorrência. O gráfico ordena do maior para o menor e traça a curva acumulada com a linha de referência dos 80%.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Ocorrências</h3>
+          <table>
+            <thead><tr><th>Causa / Defeito</th><th style="width:100px">Frequência</th><th></th></tr></thead>
+            <tbody id="paretoBody"></tbody>
+          </table>
+          <div class="empty" id="paretoEmpty" style="display:none;">Nenhuma causa cadastrada ainda.</div>
+          <div style="margin-top:14px;"><button class="btn orange" onclick="paretoAddRow()">+ Adicionar causa</button></div>
+        </div>
+        <div class="card">
+          <h3>Gráfico 80/20</h3>
+          <canvas id="paretoChart" height="260"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-ishikawa">
+      <h2 class="view-title">Diagrama de Ishikawa <span class="tag">Etapa 02 &middot; 6M</span></h2>
+      <p class="view-desc">Defina o problema central e mapeie as causas dentro de cada um dos 6M: Método, Máquina, Medida, Meio Ambiente, Mão de Obra e Matéria-Prima.</p>
+      <div class="card">
+        <label>Problema central (cabeça do peixe)</label>
+        <input type="text" id="ishiProblema" placeholder="Ex.: Índice de retrabalho acima de 8% na linha de embalagem" oninput="ishiSaveProblema()">
+      </div>
+      <div class="card">
+        <h3>Causas por categoria</h3>
+        <div class="ishi-cats" id="ishiCats"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-porques">
+      <h2 class="view-title">Técnica dos 5 Porquês <span class="tag">Etapa 02</span></h2>
+      <p class="view-desc">Parta do problema e responda "por quê?" sucessivamente até chegar à causa raiz.</p>
+      <div class="card">
+        <label>Problema</label>
+        <input type="text" id="whyProblema" placeholder="Descreva o problema observado" oninput="whySaveProblema()">
+      </div>
+      <div class="card">
+        <h3>Cascata de investigação</h3>
+        <div id="whyChain"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-w2h">
+      <h2 class="view-title">Plano de Ação 5W2H <span class="tag">Etapa 03</span></h2>
+      <p class="view-desc">Nenhuma ação corretiva sem dono, prazo e motivo. Ações também chegam aqui automaticamente vindas de não conformidades do Checklist.</p>
+      <div class="card">
+        <div class="filter-bar">
+          <div><label>Responsável</label><select id="w2hFilterWho" onchange="w2hRender()"><option value="">Todos</option></select></div>
+          <div><label>Status</label>
+            <select id="w2hFilterStatus" onchange="w2hRender()">
+              <option value="">Todos</option>
+              <option>A iniciar</option><option>Em andamento</option><option>Concluído</option><option>Atrasado</option>
+            </select>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>What</th><th>Why</th><th>Where</th><th>Who</th><th>When</th><th>How</th><th>How much</th><th>Status</th><th></th></tr></thead>
+          <tbody id="w2hBody"></tbody>
+        </table>
+        <div class="empty" id="w2hEmpty" style="display:none;">Nenhuma ação cadastrada ainda.</div>
+        <div style="margin-top:14px;"><button class="btn orange" onclick="w2hAddRow()">+ Adicionar ação</button></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeStation()"></div>
+<div class="panel" id="stationPanel">
+  <div class="panel-head">
+    <h3 id="stationTitle">Estação</h3>
+    <button class="close" onclick="closeStation()">Fechar ✕</button>
+  </div>
+  <div class="panel-subtabs">
+    <button class="active" data-sub="pop" onclick="stationSubtab('pop')">POP</button>
+    <button data-sub="checklist" onclick="stationSubtab('checklist')">Checklist</button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-sub active" id="sub-pop"></div>
+    <div class="panel-sub" id="sub-checklist"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<dialog id="sgqHelpDialog" aria-labelledby="sgqHelpTitle" style="max-width:620px;border:1px solid #c7d2dc;border-top:4px solid #f47b20;border-radius:6px;padding:24px;color:#152233">
+  <h2 id="sgqHelpTitle">Ajuda do SGQ SENAC</h2>
+  <p>Escolha uma ferramenta no menu e siga a orientação exibida no início de cada etapa. Cadastre problemas, investigue causas, planeje ações e acompanhe a execução no ciclo PDCA.</p>
+  <ol><li>Use as abas para alternar entre as ferramentas.</li><li>Preencha os campos e use os botões de cada etapa para registrar informações.</li><li>Os dados são salvos neste navegador. Use “Exportar dados” para guardar uma cópia.</li><li>Use “Gerar PDF / Imprimir” e selecione “Salvar como PDF” na janela de impressão.</li></ol>
+  <p><strong>Acessibilidade:</strong> navegue com Tab e Shift+Tab, acione botões com Enter ou Espaço e use Esc para fechar esta janela. Os controles têm foco visível e as mensagens são anunciadas pelo leitor de tela.</p>
+  <form method="dialog"><button class="btn orange">Entendi</button></form>
+</dialog>
+
+<script>
+/* ===================== SISTEMA INTEGRADO DE GESTAO DA QUALIDADE ===================== */
+/* Persistencia via localStorage. Todas as ferramentas compartilham o mesmo "banco". */
+
+const STORE_KEY = 'sgq_senac_v1';
+
+function loadDB(){
+  if(new URLSearchParams(window.location.search).get('mode') !== 'simple') return {
+    problems: [], pareto: [],
+    ishikawa: {problema:'', cats:{metodo:[],maquina:[],medida:[],meioAmbiente:[],maoDeObra:[],materiaPrima:[]}},
+    whys: {problema:'', chain:[]}, flow: [], w2h: []
+  };
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {
+    problems: [],   // GUT: {id,nome,g,u,t}
+    pareto: [],     // {id,causa,freq}
+    ishikawa: {problema:'', cats:{metodo:[],maquina:[],medida:[],meioAmbiente:[],maoDeObra:[],materiaPrima:[]}},
+    whys: {problema:'', chain:[]}, // chain: [{pergunta,resposta}]
+    flow: [],       // {id,nome,responsavel,decisao,pop:{...},checklist:[{id,texto,status,obs,foto}]}
+    w2h: []         // {id,what,why,where,who,when,how,howmuch,status,origem}
+  };
+}
+let DB = loadDB();
+function saveDB(){ if(new URLSearchParams(window.location.search).get('mode') === 'simple') localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+function uid(){ return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ---------------- NAV / TABS ---------------- */
+document.getElementById('tabNav').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-view]');
+  if(!btn) return;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('section.view').forEach(s=>s.classList.remove('active'));
+  document.getElementById('view-'+btn.dataset.view).classList.add('active');
+  if(btn.dataset.view === 'dashboard') renderDashboard();
+  if(btn.dataset.view === 'pareto') renderParetoChart();
+});
+
+document.getElementById('hdrDate').textContent = new Date().toLocaleDateString('pt-BR');
+
+/* ===================== MATRIZ GUT ===================== */
+function gutAddRow(){
+  DB.problems.push({id:uid(), nome:'', g:3,u:3,t:3});
+  saveDB(); gutRender();
+}
+function gutUpdate(id, field, val){
+  const p = DB.problems.find(x=>x.id===id); if(!p) return;
+  p[field] = (field==='nome') ? val : Number(val);
+  saveDB(); gutRender();
+}
+// Atualiza em silêncio enquanto o usuário digita (sem re-render, para não perder o foco)
+function gutSetNome(id, val){
+  const p = DB.problems.find(x=>x.id===id); if(!p) return;
+  p.nome = val; saveDB();
+}
+function gutRemove(id){
+  DB.problems = DB.problems.filter(x=>x.id!==id);
+  saveDB(); gutRender();
+}
+function gutRender(){
+  const body = document.getElementById('gutBody');
+  const empty = document.getElementById('gutEmpty');
+  const sorted = [...DB.problems].sort((a,b)=> (b.g*b.u*b.t)-(a.g*a.u*a.t));
+  empty.style.display = sorted.length? 'none':'block';
+  body.innerHTML = sorted.map((p,idx)=>{
+    const score = p.g*p.u*p.t;
+    let cls='lo'; if(score>=64) cls='hi'; else if(score>=27) cls='mid';
+    const opts = n => [1,2,3,4,5].map(v=>`<option value="${v}" ${p[n]==v?'selected':''}>${v}</option>`).join('');
+    return `<tr>
+      <td><input type="text" value="${escapeAttr(p.nome)}" placeholder="Descreva o problema" oninput="gutSetNome('${p.id}', this.value)" onchange="gutRender()"></td>
+      <td><select onchange="gutUpdate('${p.id}','g',this.value)">${opts('g')}</select></td>
+      <td><select onchange="gutUpdate('${p.id}','u',this.value)">${opts('u')}</select></td>
+      <td><select onchange="gutUpdate('${p.id}','t',this.value)">${opts('t')}</select></td>
+      <td class="gut-score">${score}</td>
+      <td><span class="stamp ${cls}">${cls==='hi'?'Crítico':cls==='mid'?'Atenção':'Baixo'}</span></td>
+      <td><button class="small-icon-btn" title="Remover" onclick="gutRemove('${p.id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ===================== PARETO ===================== */
+let paretoChartObj = null;
+function paretoAddRow(){
+  DB.pareto.push({id:uid(), causa:'', freq:0});
+  saveDB(); paretoRender();
+}
+function paretoUpdate(id, field, val){
+  const p = DB.pareto.find(x=>x.id===id); if(!p) return;
+  p[field] = field==='freq' ? Number(val) : val;
+  saveDB(); paretoRender();
+}
+// Atualiza em silêncio enquanto o usuário digita (sem re-render, para não perder o foco)
+function paretoSetField(id, field, val){
+  const p = DB.pareto.find(x=>x.id===id); if(!p) return;
+  p[field] = field==='freq' ? Number(val) : val;
+  saveDB();
+}
+function paretoRemove(id){
+  DB.pareto = DB.pareto.filter(x=>x.id!==id);
+  saveDB(); paretoRender();
+}
+function paretoRender(){
+  const body = document.getElementById('paretoBody');
+  const empty = document.getElementById('paretoEmpty');
+  empty.style.display = DB.pareto.length? 'none':'block';
+  body.innerHTML = DB.pareto.map(p=>`<tr>
+    <td><input type="text" value="${escapeAttr(p.causa)}" placeholder="Causa ou defeito" oninput="paretoSetField('${p.id}','causa',this.value)" onchange="paretoRender()"></td>
+    <td><input type="number" min="0" value="${p.freq}" oninput="paretoSetField('${p.id}','freq',this.value)" onchange="paretoRender()"></td>
+    <td><button class="small-icon-btn" title="Remover" onclick="paretoRemove('${p.id}')">🗑</button></td>
+  </tr>`).join('');
+  renderParetoChart();
+}
+function renderParetoChart(){
+  const canvas = document.getElementById('paretoChart');
+  if(!canvas || typeof Chart==='undefined') return;
+  const data = [...DB.pareto].filter(p=>p.causa).sort((a,b)=>b.freq-a.freq);
+  const total = data.reduce((s,p)=>s+p.freq,0) || 1;
+  let acc = 0;
+  const acumulado = data.map(p=>{ acc += p.freq; return +(acc/total*100).toFixed(1); });
+  const ctx = canvas.getContext('2d');
+  if(paretoChartObj) paretoChartObj.destroy();
+  paretoChartObj = new Chart(ctx, {
+    data:{
+      labels: data.map(p=>p.causa),
+      datasets:[
+        {type:'bar', label:'Frequência', data:data.map(p=>p.freq), backgroundColor:'#00457c', yAxisID:'y', order:2},
+        {type:'line', label:'% Acumulado', data:acumulado, borderColor:'#f47b20', backgroundColor:'#f47b20', yAxisID:'y1', tension:.25, order:1, pointRadius:3},
+        {type:'line', label:'Linha 80%', data:data.map(()=>80), borderColor:'#b3382c', borderDash:[6,4], pointRadius:0, yAxisID:'y1', order:0}
+      ]
+    },
+    options:{
+      responsive:true,
+      interaction:{mode:'index', intersect:false},
+      scales:{
+        y:{position:'left', title:{display:true,text:'Frequência'}},
+        y1:{position:'right', min:0, max:100, grid:{drawOnChartArea:false}, title:{display:true,text:'% acumulado'}}
+      },
+      plugins:{legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}}}
+    }
+  });
+}
+
+/* ===================== ISHIKAWA ===================== */
+const ISHI_CATS = [
+  ['metodo','Método'],['maquina','Máquina'],['medida','Medida'],
+  ['meioAmbiente','Meio Ambiente'],['maoDeObra','Mão de Obra'],['materiaPrima','Matéria-Prima']
+];
+function ishiSaveProblema(){
+  DB.ishikawa.problema = document.getElementById('ishiProblema').value;
+  saveDB();
+}
+function ishiAddItem(cat, inputEl){
+  const val = inputEl.value.trim();
+  if(!val) return;
+  DB.ishikawa.cats[cat].push({id:uid(), texto:val});
+  inputEl.value='';
+  saveDB(); ishiRender();
+}
+function ishiRemoveItem(cat, id){
+  DB.ishikawa.cats[cat] = DB.ishikawa.cats[cat].filter(i=>i.id!==id);
+  saveDB(); ishiRender();
+}
+function ishiRender(){
+  document.getElementById('ishiProblema').value = DB.ishikawa.problema || '';
+  const wrap = document.getElementById('ishiCats');
+  wrap.innerHTML = ISHI_CATS.map(([key,label])=>{
+    const items = DB.ishikawa.cats[key] || [];
+    return `<div class="ishi-cat">
+      <h5>${label}</h5>
+      <ul>${items.map(i=>`<li><span>${escapeHtml(i.texto)}</span><button class="small-icon-btn" onclick="ishiRemoveItem('${key}','${i.id}')">🗑</button></li>`).join('') || '<li style="color:#93a2b0;border:none;">Nenhuma causa ainda</li>'}</ul>
+      <div class="add-row">
+        <input type="text" placeholder="Adicionar causa..." onkeydown="if(event.key==='Enter'){ishiAddItem('${key}',this)}">
+        <button class="btn small ghost" onclick="ishiAddItem('${key}', this.previousElementSibling)">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== 5 PORQUES ===================== */
+function whySaveProblema(){
+  DB.whys.problema = document.getElementById('whyProblema').value;
+  saveDB();
+}
+function whyUpdate(idx, val){
+  DB.whys.chain[idx].resposta = val;
+  saveDB(); whyRender();
+}
+// Atualiza em silêncio enquanto o usuário digita (sem re-render, para não perder o foco)
+function whySetAnswer(idx, val){
+  DB.whys.chain[idx].resposta = val;
+  saveDB();
+}
+function whyAddNext(){
+  if(DB.whys.chain.length>=5) return;
+  DB.whys.chain.push({pergunta:'Por quê?', resposta:''});
+  saveDB(); whyRender();
+}
+function whyRemoveFrom(idx){
+  DB.whys.chain = DB.whys.chain.slice(0, idx);
+  saveDB(); whyRender();
+}
+function whySendToAction(){
+  const causaRaiz = DB.whys.chain.length ? DB.whys.chain[DB.whys.chain.length-1].resposta : '';
+  if(!causaRaiz){ toast('Preencha a cadeia de porquês antes de enviar.'); return; }
+  DB.w2h.push({id:uid(), what:'Eliminar causa raiz: '+causaRaiz, why:DB.whys.problema||'Investigação dos 5 Porquês',
+    where:'', who:'', when:'', how:'', howmuch:'', status:'A iniciar', origem:'5 Porquês'});
+  saveDB();
+  toast('Causa raiz enviada para o Plano 5W2H.');
+}
+function whyRender(){
+  document.getElementById('whyProblema').value = DB.whys.problema || '';
+  const wrap = document.getElementById('whyChain');
+  if(!DB.whys.chain.length){
+    wrap.innerHTML = `<div class="empty">Nenhum "por quê" registrado ainda.</div>
+      <div style="margin-top:14px;"><button class="btn orange" onclick="whyAddNext()">+ Perguntar "Por quê?"</button></div>`;
+    return;
+  }
+  let html = DB.whys.chain.map((w,idx)=>`
+    <div class="why-step">
+      <div class="why-num">${idx+1}</div>
+      <div class="why-body">
+        <label>Por quê? (nível ${idx+1})</label>
+        <input type="text" value="${escapeAttr(w.resposta)}" placeholder="Responda para liberar o próximo nível"
+          oninput="whySetAnswer(${idx}, this.value)" onchange="whyRender()">
+        ${idx===DB.whys.chain.length-1 ? `<button class="btn small ghost" onclick="whyRemoveFrom(${idx})">Desfazer este nível</button>` : ''}
+      </div>
+    </div>`).join('');
+  wrap.innerHTML = html;
+  const last = DB.whys.chain[DB.whys.chain.length-1];
+  const canAdvance = last.resposta && last.resposta.trim().length>0;
+  if(DB.whys.chain.length<5 && canAdvance){
+    wrap.innerHTML += `<div style="margin:12px 0;"><button class="btn orange" onclick="whyAddNext()">+ Perguntar novamente "Por quê?"</button></div>`;
+  }
+  if(canAdvance){
+    wrap.innerHTML += `<div class="card" style="background:#e7f5ee;border-color:#1f7a4d;">
+      <h3 style="color:#1f7a4d;border:none;">Causa raiz identificada</h3>
+      <p style="margin:0 0 12px;font-size:13.5px;">${escapeHtml(last.resposta)}</p>
+      <button class="btn orange" onclick="whySendToAction()">Enviar causa raiz para o 5W2H →</button>
+    </div>`;
+  }
+}
+
+/* ===================== 5W2H ===================== */
+function w2hAddRow(){
+  DB.w2h.push({id:uid(), what:'', why:'', where:'', who:'', when:'', how:'', howmuch:'', status:'A iniciar', origem:'Manual'});
+  saveDB(); w2hRender();
+}
+function w2hUpdate(id, field, val){
+  const r = DB.w2h.find(x=>x.id===id); if(!r) return;
+  r[field] = val; saveDB(); w2hRender();
+}
+// Atualiza em silêncio enquanto o usuário digita (sem re-render, para não perder o foco)
+function w2hSetField(id, field, val){
+  const r = DB.w2h.find(x=>x.id===id); if(!r) return;
+  r[field] = val; saveDB();
+}
+function w2hRemove(id){
+  DB.w2h = DB.w2h.filter(x=>x.id!==id);
+  saveDB(); w2hRender();
+}
+function w2hRender(){
+  const body = document.getElementById('w2hBody');
+  const empty = document.getElementById('w2hEmpty');
+  const whoSel = document.getElementById('w2hFilterWho');
+  const currentWho = whoSel.value;
+  const whos = [...new Set(DB.w2h.map(r=>r.who).filter(Boolean))];
+  whoSel.innerHTML = '<option value="">Todos</option>' + whos.map(w=>`<option ${w===currentWho?'selected':''}>${escapeHtml(w)}</option>`).join('');
+  const fWho = document.getElementById('w2hFilterWho').value;
+  const fStatus = document.getElementById('w2hFilterStatus').value;
+  const list = DB.w2h.filter(r => (!fWho || r.who===fWho) && (!fStatus || r.status===fStatus));
+  empty.style.display = list.length? 'none':'block';
+  const statusOpts = s => ['A iniciar','Em andamento','Concluído','Atrasado'].map(o=>`<option ${o===s?'selected':''}>${o}</option>`).join('');
+  body.innerHTML = list.map(r=>`<tr>
+    <td><input type="text" value="${escapeAttr(r.what)}" oninput="w2hSetField('${r.id}','what',this.value)" onchange="w2hRender()"></td>
+    <td><input type="text" value="${escapeAttr(r.why)}" oninput="w2hSetField('${r.id}','why',this.value)" onchange="w2hRender()"></td>
+    <td><input type="text" value="${escapeAttr(r.where)}" oninput="w2hSetField('${r.id}','where',this.value)" onchange="w2hRender()"></td>
+    <td><input type="text" value="${escapeAttr(r.who)}" oninput="w2hSetField('${r.id}','who',this.value)" onchange="w2hRender()"></td>
+    <td><input type="date" value="${escapeAttr(r.when)}" oninput="w2hSetField('${r.id}','when',this.value)" onchange="w2hRender()"></td>
+    <td><input type="text" value="${escapeAttr(r.how)}" oninput="w2hSetField('${r.id}','how',this.value)" onchange="w2hRender()"></td>
+    <td><input type="text" value="${escapeAttr(r.howmuch)}" placeholder="R$" oninput="w2hSetField('${r.id}','howmuch',this.value)" onchange="w2hRender()"></td>
+    <td><select onchange="w2hUpdate('${r.id}','status',this.value)">${statusOpts(r.status)}</select></td>
+    <td><button class="small-icon-btn" onclick="w2hRemove('${r.id}')">🗑</button></td>
+  </tr>`).join('');
+}
+
+/* ===================== FLUXOGRAMA + POP + CHECKLIST ===================== */
+function flowAddStep(){
+  const nome = prompt('Nome da etapa do processo:');
+  if(!nome) return;
+  const responsavel = prompt('Responsável pela etapa:') || '';
+  const decisao = confirm('Esta etapa envolve uma tomada de decisão? (OK = sim / Cancelar = não)');
+  DB.flow.push({
+    id: uid(), nome, responsavel, decisao,
+    pop: {empresa:'SENAC', codigo:'', versao:'01', dataEmissao:new Date().toISOString().slice(0,10),
+      objetivo:'', referencias:'', descricao:'', historico:''},
+    checklist: []
+  });
+  saveDB(); flowRender();
+}
+function flowRemoveStep(id, ev){
+  ev.stopPropagation();
+  if(!confirm('Remover esta etapa e todo o POP/Checklist vinculado?')) return;
+  DB.flow = DB.flow.filter(f=>f.id!==id);
+  saveDB(); flowRender();
+}
+function flowRender(){
+  const track = document.getElementById('flowTrack');
+  let html = '';
+  DB.flow.forEach((step, idx)=>{
+    const conf = checklistConformity(step);
+    const hasNC = step.checklist.some(c=>c.status==='nao');
+    html += `<div class="flow-step ${step.decisao?'decision':''}" onclick="openStation('${step.id}')">
+      <span class="step-idx">${step.decisao? '◇ DECISÃO':'ETAPA '+(idx+1)}</span>
+      <div class="step-name">${escapeHtml(step.nome)}</div>
+      <div class="step-resp">${escapeHtml(step.responsavel||'Sem responsável')}</div>
+      <div class="step-badges">
+        ${conf!==null?`<span class="pill" style="padding:1px 6px;">${conf}%</span>`:''}
+        ${hasNC?'<span class="badge-dot" style="background:#b3382c;" title="Não conformidade em aberto"></span>':''}
+      </div>
+      <button class="small-icon-btn" style="position:absolute;top:6px;right:6px;" onclick="flowRemoveStep('${step.id}', event)">✕</button>
+    </div>`;
+    if(idx < DB.flow.length-1){
+      html += `<div class="flow-arrow"></div>`;
+    }
+  });
+  if(DB.flow.length) html += `<div class="flow-arrow"></div>`;
+  html += `<div class="flow-add" onclick="flowAddStep()">+ Nova etapa</div>`;
+  track.innerHTML = html;
+}
+function checklistConformity(step){
+  const relevant = step.checklist.filter(c=>c.status==='ok'||c.status==='nao');
+  if(!relevant.length) return null;
+  const ok = relevant.filter(c=>c.status==='ok').length;
+  return Math.round(ok/relevant.length*100);
+}
+
+let currentStationId = null;
+let currentSub = 'pop';
+function openStation(id){
+  currentStationId = id;
+  currentSub = 'pop';
+  const step = DB.flow.find(f=>f.id===id);
+  document.getElementById('stationTitle').textContent = 'Estação: ' + step.nome;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('stationPanel').classList.add('open');
+  document.querySelectorAll('.panel-subtabs button').forEach(b=>b.classList.toggle('active', b.dataset.sub==='pop'));
+  document.getElementById('sub-pop').classList.add('active');
+  document.getElementById('sub-checklist').classList.remove('active');
+  renderPOP(step);
+  renderChecklist(step);
+}
+function closeStation(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('stationPanel').classList.remove('open');
+  currentStationId = null;
+  flowRender();
+  renderDashboard();
+}
+function stationSubtab(sub){
+  currentSub = sub;
+  document.querySelectorAll('.panel-subtabs button').forEach(b=>b.classList.toggle('active', b.dataset.sub===sub));
+  document.getElementById('sub-pop').classList.toggle('active', sub==='pop');
+  document.getElementById('sub-checklist').classList.toggle('active', sub==='checklist');
+}
+
+function popUpdate(field, val){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  step.pop[field] = val; saveDB();
+}
+function renderPOP(step){
+  const p = step.pop;
+  document.getElementById('sub-pop').innerHTML = `
+    <div class="pop-doc">
+      <div class="pop-doc-head">
+        <div class="titleblock">
+          <small>Procedimento Operacional Padrão</small>
+          <div style="font-family:var(--display);font-size:17px;font-weight:600;color:var(--blue-900);margin-top:4px;">${escapeHtml(step.nome)}</div>
+        </div>
+        <div class="meta">
+          <div><span>Empresa</span><input type="text" style="width:120px;padding:2px 5px;" value="${escapeAttr(p.empresa)}" onchange="popUpdate('empresa',this.value)"></div>
+          <div><span>Código</span><input type="text" style="width:120px;padding:2px 5px;" placeholder="POP-001" value="${escapeAttr(p.codigo)}" onchange="popUpdate('codigo',this.value)"></div>
+          <div><span>Versão</span><input type="text" style="width:120px;padding:2px 5px;" value="${escapeAttr(p.versao)}" onchange="popUpdate('versao',this.value)"></div>
+          <div><span>Emissão</span><input type="date" style="width:120px;padding:2px 5px;" value="${escapeAttr(p.dataEmissao)}" onchange="popUpdate('dataEmissao',this.value)"></div>
+        </div>
+      </div>
+      <div class="pop-section">
+        <label>Objetivo</label>
+        <textarea placeholder="Para que serve este procedimento?" onchange="popUpdate('objetivo',this.value)">${escapeHtml(p.objetivo)}</textarea>
+      </div>
+      <div class="pop-section">
+        <label>Documentos de referência</label>
+        <textarea placeholder="Leis, normas, manuais..." onchange="popUpdate('referencias',this.value)">${escapeHtml(p.referencias)}</textarea>
+      </div>
+      <div class="pop-section">
+        <label>Descrição do passo a passo</label>
+        <textarea style="min-height:120px;" placeholder="O que fazer, como fazer e quem faz..." onchange="popUpdate('descricao',this.value)">${escapeHtml(p.descricao)}</textarea>
+      </div>
+      <div class="pop-section">
+        <label>Gestão de mudanças / histórico de revisões</label>
+        <textarea placeholder="Data - o que mudou - aprovado por..." onchange="popUpdate('historico',this.value)">${escapeHtml(p.historico)}</textarea>
+      </div>
+    </div>
+    <div style="margin-top:14px;" class="no-print">
+      <button class="btn ghost" onclick="window.print()">🖨 Exportar / Imprimir POP (PDF)</button>
+    </div>
+  `;
+}
+
+function checklistAddItem(){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  const texto = document.getElementById('newChecklistItem').value.trim();
+  if(!texto) return;
+  step.checklist.push({id:uid(), texto, status:'', obs:'', foto:''});
+  saveDB(); renderChecklist(step);
+}
+function checklistSetStatus(itemId, status){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  const item = step.checklist.find(i=>i.id===itemId); if(!item) return;
+  item.status = status;
+  saveDB(); renderChecklist(step);
+}
+function checklistSetObs(itemId, val){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  const item = step.checklist.find(i=>i.id===itemId); if(!item) return;
+  item.obs = val; saveDB();
+}
+function checklistSetFoto(itemId, files){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  const item = step.checklist.find(i=>i.id===itemId); if(!item) return;
+  item.foto = files && files[0] ? files[0].name : '';
+  saveDB(); renderChecklist(step);
+}
+function checklistRemoveItem(itemId){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  step.checklist = step.checklist.filter(i=>i.id!==itemId);
+  saveDB(); renderChecklist(step);
+}
+function checklistSendToAction(itemId){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  const item = step.checklist.find(i=>i.id===itemId); if(!item) return;
+  DB.w2h.push({
+    id:uid(), what:'Corrigir não conformidade: '+item.texto, why:item.obs||'Item reprovado no checklist',
+    where:step.nome, who:step.responsavel||'', when:'', how:'', howmuch:'', status:'A iniciar', origem:'Checklist'
+  });
+  saveDB();
+  toast('Ação corretiva registrada no 5W2H.');
+}
+function checklistSendToGUT(itemId){
+  const step = DB.flow.find(f=>f.id===currentStationId); if(!step) return;
+  const item = step.checklist.find(i=>i.id===itemId); if(!item) return;
+  DB.problems.push({id:uid(), nome:'['+step.nome+'] '+item.texto, g:4,u:4,t:3});
+  saveDB();
+  toast('Desvio registrado na Matriz GUT para priorização.');
+}
+function renderChecklist(step){
+  const conf = checklistConformity(step);
+  const wrap = document.getElementById('sub-checklist');
+  let html = `<div class="conf-meter">
+    <div style="flex:none;">
+      <div class="stat-label" style="color:var(--ink-soft);font-size:11px;text-transform:uppercase;">Conformidade</div>
+      <div class="pct">${conf===null? '—' : conf+'%'}</div>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width:${conf||0}%;"></div></div>
+  </div>`;
+
+  html += step.checklist.map(item=>`
+    <div class="check-item">
+      <div class="ci-top">
+        <div class="ci-text">${escapeHtml(item.texto)}</div>
+        <div class="ci-options">
+          <button class="ok ${item.status==='ok'?'sel':''}" onclick="checklistSetStatus('${item.id}','ok')">Conforme</button>
+          <button class="no ${item.status==='nao'?'sel':''}" onclick="checklistSetStatus('${item.id}','nao')">Não conforme</button>
+          <button class="na ${item.status==='na'?'sel':''}" onclick="checklistSetStatus('${item.id}','na')">N/A</button>
+        </div>
+        <button class="small-icon-btn" onclick="checklistRemoveItem('${item.id}')">🗑</button>
+      </div>
+      ${item.status==='nao' ? `
+        <div class="ci-just">
+          <label>Justificativa (obrigatória)</label>
+          <textarea placeholder="Descreva o desvio observado" onchange="checklistSetObs('${item.id}',this.value)">${escapeHtml(item.obs)}</textarea>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+            <label style="margin:0;"><input type="file" accept="image/*" style="width:auto;" onchange="checklistSetFoto('${item.id}', this.files)"></label>
+            ${item.foto? `<span class="pill">📎 ${escapeHtml(item.foto)}</span>` : ''}
+            <button class="btn small orange" onclick="checklistSendToAction('${item.id}')">Abrir ação no 5W2H</button>
+            <button class="btn small ghost" onclick="checklistSendToGUT('${item.id}')">Registrar na Matriz GUT</button>
+          </div>
+        </div>` : ''}
+    </div>`).join('');
+
+  html += `<div style="display:flex;gap:8px;margin-top:6px;">
+    <input type="text" id="newChecklistItem" placeholder="Novo item de verificação..." onkeydown="if(event.key==='Enter'){checklistAddItem()}">
+    <button class="btn orange" style="flex:none;" onclick="checklistAddItem()">+ Item</button>
+  </div>`;
+
+  if(!step.checklist.length){
+    html = `<div class="conf-meter"><div style="flex:1;color:var(--ink-soft);font-size:13px;">Nenhum item de verificação cadastrado ainda.</div></div>` + html.split('</div>').slice(-0).join('') ;
+    // fallback simple: keep add-item input visible
+    html = `<div class="empty" style="margin-bottom:14px;">Nenhum item de verificação cadastrado ainda.</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="newChecklistItem" placeholder="Novo item de verificação..." onkeydown="if(event.key==='Enter'){checklistAddItem()}">
+        <button class="btn orange" style="flex:none;" onclick="checklistAddItem()">+ Item</button>
+      </div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+/* ===================== DASHBOARD PDCA ===================== */
+function renderDashboard(){
+  // P - Planejar
+  document.getElementById('pdcaPlanStat').textContent = DB.problems.length;
+  const topProblems = [...DB.problems].sort((a,b)=>(b.g*b.u*b.t)-(a.g*a.u*a.t)).slice(0,3);
+  document.getElementById('pdcaPlanTop').innerHTML = topProblems.length
+    ? topProblems.map(p=>`<li>${escapeHtml(p.nome||'(sem nome)')} — score ${p.g*p.u*p.t}</li>`).join('')
+    : '<li>Nenhum problema priorizado ainda</li>';
+
+  // D - Executar
+  const total = DB.w2h.length;
+  const done = DB.w2h.filter(r=>r.status==='Concluído').length;
+  document.getElementById('pdcaDoStat').textContent = total ? Math.round(done/total*100)+'%' : '0%';
+  const byStatus = {};
+  DB.w2h.forEach(r=>{ byStatus[r.status] = (byStatus[r.status]||0)+1; });
+  document.getElementById('pdcaDoList').innerHTML = total
+    ? Object.entries(byStatus).map(([s,c])=>`<li>${s}: ${c}</li>`).join('')
+    : '<li>Nenhuma ação cadastrada no 5W2H</li>';
+
+  // C - Verificar
+  const confs = DB.flow.map(checklistConformity).filter(c=>c!==null);
+  const avgConf = confs.length ? Math.round(confs.reduce((a,b)=>a+b,0)/confs.length) : null;
+  document.getElementById('pdcaCheckStat').textContent = avgConf===null ? '—' : avgConf+'%';
+  document.getElementById('pdcaCheckList').innerHTML = DB.flow.length
+    ? DB.flow.map(s=>{ const c=checklistConformity(s); return `<li>${escapeHtml(s.nome)}: ${c===null?'sem checklist':c+'%'}</li>`; }).join('')
+    : '<li>Nenhuma etapa cadastrada no fluxograma</li>';
+
+  // A - Agir
+  let ncCount = 0;
+  const ncList = [];
+  DB.flow.forEach(s=>{
+    s.checklist.filter(c=>c.status==='nao').forEach(c=>{ ncCount++; ncList.push(s.nome+': '+c.texto); });
+  });
+  document.getElementById('pdcaActStat').textContent = ncCount;
+  document.getElementById('pdcaActList').innerHTML = ncList.length
+    ? ncList.slice(0,4).map(t=>`<li>${escapeHtml(t)}</li>`).join('')
+    : '<li>Nenhuma não conformidade em aberto</li>';
+}
+
+/* ===================== HELPERS ===================== */
+function escapeHtml(str){
+  return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+/* ===================== INIT ===================== */
+function initAll(){
+  gutRender();
+  paretoRender();
+  ishiRender();
+  whyRender();
+  w2hRender();
+  flowRender();
+  renderDashboard();
+}
+initAll();
+
+/* Ajuda, avisos de alterações e exportações locais. */
+(function installUserSupport(){
+  const key = STORE_KEY;
+  let dirty = false;
+  const status = document.getElementById('sgqSaveStatus');
+  const help = document.getElementById('sgqHelpDialog');
+  const nativeSave = saveDB;
+  saveDB = function(){ nativeSave(); dirty = false; status.textContent = new URLSearchParams(window.location.search).get('mode') === 'simple' ? 'Salvo neste dispositivo às ' + new Date().toLocaleTimeString('pt-BR') : 'Enviando alterações ao servidor…'; };
+  document.addEventListener('input', function(event){ if(event.target.matches('input,textarea,select')) { dirty = true; status.textContent = 'Alterações ainda não salvas'; } }, true);
+  document.addEventListener('change', function(event){ if(event.target.matches('input,textarea,select')) { dirty = true; status.textContent = 'Alterações ainda não salvas'; } }, true);
+  document.getElementById('sgqSaveButton').addEventListener('click', function(){ try { saveDB(); dirty = false; status.textContent = new URLSearchParams(window.location.search).get('mode') === 'simple' ? 'Salvo neste dispositivo às ' + new Date().toLocaleTimeString('pt-BR') : 'Salvando no servidor…'; if(new URLSearchParams(window.location.search).get('mode') === 'simple') toast('Alterações salvas neste dispositivo.'); } catch(error) { toast('Não foi possível salvar. Verifique o espaço disponível.'); } });
+  document.getElementById('sgqHelpButton').addEventListener('click', function(){ help.showModal(); });
+  document.getElementById('sgqPdfButton').addEventListener('click', function(){ if(dirty && !window.confirm('Há alterações ainda não salvas. Deseja salvar antes de gerar o PDF?')) return; if(dirty) document.getElementById('sgqSaveButton').click(); window.print(); });
+  document.getElementById('sgqExportButton').addEventListener('click', function(){
+    try { saveDB(); dirty = false; const payload = {schema:'sgq-senac-export-v1', exportedAt:new Date().toISOString(), data:DB}; const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='sgq-senac-dados-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); URL.revokeObjectURL(url); toast('Cópia dos dados exportada. Guarde o arquivo em local seguro.'); } catch(error) { toast('Não foi possível exportar os dados.'); }
+  });
+  window.addEventListener('beforeunload', function(event){ if(dirty){ event.preventDefault(); event.returnValue=''; } });
+  document.addEventListener('keydown', function(event){ if(event.key==='Escape' && help.open) help.close(); });
+})();
+
+</script>
+<script src="./src/auth.js"></script>
+</body>
+</html>

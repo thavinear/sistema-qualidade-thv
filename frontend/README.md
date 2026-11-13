@@ -1,51 +1,53 @@
-# Sistema Integrado de Gestão da Qualidade — Frontend
+﻿# SGQ SENAC — Sistema de Gestão da Qualidade
 
-Frontend do SGQ SENAC em HTML, CSS e JavaScript vanilla, servido pelo Vite.
+Frontend web em HTML, CSS e JavaScript, servido pelo Vite. O backend Spring Boot fica em ../backend/sistema-qualidade/.
 
-## Como executar
+## Arquitetura
 
-Na pasta frontend, instale as dependências e inicie o servidor:
+- Frontend: landing page, login e Workspace em HTML/CSS/JavaScript.
+- Backend: Java 17 e Spring Boot; autenticação por cookie JWT e API em /api.
+- Workspace: dados por usuário persistidos em PostgreSQL como documento JSON em coluna TEXT.
+- H2 é usado somente nos testes do backend.
+
+## Requisitos
+
+Node.js 18+, Java 17+ e PostgreSQL para executar o backend.
+
+## Configuração do backend
+
+Defina as variáveis de ambiente antes de iniciar o Spring Boot. Os valores locais estão documentados em ../.env.example (Spring não carrega esse arquivo automaticamente).
+
+- DATABASE_URL: JDBC URL PostgreSQL; padrão jdbc:postgresql://localhost:5432/sgq.
+- DB_USERNAME e DB_PASSWORD: credenciais do banco.
+- JWT_SECRET: segredo aleatório forte; nunca use um valor de exemplo em produção.
+- JWT_EXPIRATION_SECONDS: validade do cookie JWT; padrão 3600.
+- AUTH_COOKIE_SECURE: false em HTTP local e true em HTTPS de produção.
+- AUTH_COOKIE_SAME_SITE: política SameSite, padrão Lax.
+- FRONTEND_ORIGIN: origem CORS, padrão http://localhost:5173.
+
+## Executar em desenvolvimento
+
+Terminal 1 — backend (a partir da raiz do projeto):
+
+    cd backend\sistema-qualidade
+    gradlew.bat bootRun
+
+Terminal 2 — frontend (a partir desta pasta):
 
     npm install
     npm run dev
 
-Acesse o endereço local informado pelo Vite. A autenticação usa Web Crypto SHA-256, disponível em contextos seguros como localhost. Abrir os arquivos diretamente pelo protocolo file:// pode impedir o uso de Web Crypto e não é recomendado.
+Abra http://localhost:5173. O proxy Vite encaminha /api para http://localhost:8080. As chamadas incluem cookies e o token CSRF.
 
-## Primeiro acesso
+O link “Usar sem login” abre o modo demonstrativo local; os dados desse modo ficam no armazenamento do navegador.
 
-Na primeira execução, o sistema cria o administrador padrão:
+## Build
 
-- E-mail: admin@sgqsenac.com
-- Senha: admin123
-- Perfil: Admin
+Nesta pasta:
 
-Redefina a senha pela gestão de usuários após o primeiro acesso. O aviso de credenciais padrão aparece na tela de login apenas quando a lista de usuários é criada pela primeira vez.
+    npm run build
 
-## Perfis e permissões
+No backend:
 
-- **Admin:** acesso total aos módulos, gestão de usuários e configuração das permissões do perfil Usuário.
-- **Usuário:** acessa os módulos conforme as permissões de Ver, Editar e Excluir definidas pelo Admin.
-- Na gestão de usuários, o Admin pode criar, editar, ativar/desativar, excluir contas e redefinir senhas.
-- A aba Permissões permite configurar o perfil Usuário por módulo. As alterações são aplicadas imediatamente.
-
-## Persistência e segurança
-
-Os dados ficam somente no armazenamento local do navegador:
-
-- sgq_senac_usuarios: contas e hashes das senhas.
-- sgq_senac_sessao: sessão do navegador atual.
-- sgq_senac_permissoes: permissões por módulo e perfil.
-
-As senhas são transformadas com SHA-256 no cliente usando Web Crypto. **Isso NÃO é seguro para produção real**: não há backend, controle de sessão no servidor ou proteção contra adulteração do localStorage. Esta implementação serve para demonstração, protótipo e uso interno controlado.
-
-Para produção real, implemente autenticação e autorização no backend, armazenamento seguro de senhas e banco de dados PostgreSQL. O projeto já declara PostgreSQL no build.gradle.
-
-## Roteiro de teste manual
-
-1. Rode npm run dev e abra a aplicação; sem sessão, deve aparecer a página de login.
-2. Entre com admin@sgqsenac.com e admin123.
-3. Em Usuários, crie uma conta com nome, e-mail, perfil Usuário e senha inicial.
-4. Faça logout, entre com a conta criada e confirme que a gestão de usuários não aparece.
-5. Como Admin, abra Usuários > Permissões e desmarque, por exemplo, Editar em Matriz GUT para Usuário.
-6. Volte à conta Usuário e confirme que os controles de edição ficam desabilitados. Reative a permissão ao terminar.
-7. Faça logout e confirme que a sessão é removida. Recarregar a página com sessão válida mantém a conta conectada.
+    cd ..\backend\sistema-qualidade
+    gradlew.bat build

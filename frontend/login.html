@@ -10,7 +10,7 @@
 <body class="auth-page" data-page="login">
   <main class="login-shell">
     <section class="login-card" aria-labelledby="login-title">
-      <div class="login-logo-wrap"><img class="login-logo" src="./assets/senac-logo.svg" alt="SENAC"><span class="login-logo-fallback" hidden>SENAC</span></div>
+      <div class="login-logo-wrap"><img class="login-logo" src="/assets/senac-logo.png" alt="SENAC"><span class="login-logo-fallback" hidden>SENAC</span></div>
       <p class="auth-eyebrow">Sistema Integrado de Gestão da Qualidade</p>
       <h1 id="login-title">Acesse sua conta</h1>
       <p class="auth-subtitle">Entre para continuar no SGQ SENAC.</p>
@@ -28,9 +28,18 @@
         <button id="loginSubmit" class="auth-primary" type="submit">Entrar</button>
       </form>
 
+      <button id="showRegister" class="auth-link" type="button">Criar uma conta</button>
+      <form id="registerForm" novalidate hidden>
+        <h2>Cadastro de usuário</h2>
+        <div class="auth-field"><label for="registerName">Nome</label><input id="registerName" name="name" required maxlength="100" autocomplete="name"></div>
+        <div class="auth-field"><label for="registerEmail">E-mail</label><input id="registerEmail" name="email" type="email" required maxlength="254" autocomplete="email"></div>
+        <div class="auth-field"><label for="registerPassword">Senha (mínimo 10 caracteres)</label><input id="registerPassword" name="password" type="password" required minlength="10" maxlength="72" autocomplete="new-password"></div>
+        <p id="registerMessage" class="auth-message" role="alert" aria-live="polite"></p>
+        <button class="auth-primary" type="submit">Criar conta</button>
+      </form>
+
       <button id="forgotPassword" class="auth-link" type="button">Esqueci minha senha</button>
       <p id="defaultAdminNotice" class="admin-notice" hidden>
-        Primeiro acesso? Admin padrão: <strong>admin@sgqsenac.com</strong> / <strong>admin123</strong>
       </p>
       <p class="auth-footer">Acesso restrito a usuários cadastrados.</p>
     </section>

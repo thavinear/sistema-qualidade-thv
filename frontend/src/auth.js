@@ -440,7 +440,7 @@
         else if (user.passwordHash !== await hashPassword(password)) message.textContent = 'Senha incorreta.';
         else {
           write(KEYS.session, { userId: user.id, createdAt: Date.now() });
-          window.location.replace('./index.html');
+          window.location.replace('./app.html');
           return;
         }
       } catch (error) {
@@ -465,72 +465,94 @@
   }
 
   function mobileNavMarkup() {
-    const direct = [
-      { id: 'dashboard', label: 'Painel', icon: '⌂' },
-      { id: 'fluxo', label: 'Fluxograma', icon: '⇢' },
-      { id: 'w2h', label: '5W2H', icon: '✓' }
-    ];
-    const entries = direct.map(function (entry) {
-      return '<button type="button" data-mobile-view="' + entry.id + '" aria-label="' + entry.label + '">' +
-        '<span class="mobile-nav-icon" aria-hidden="true">' + entry.icon + '</span><span>' + entry.label + '</span></button>';
-    }).join('');
-    return '<nav class="mobile-bottom-nav" aria-label="Navegação móvel">' + entries +
-      '<button type="button" data-mobile-modules aria-expanded="false" aria-controls="mobileModuleDrawer">' +
-      '<span class="mobile-nav-icon" aria-hidden="true">☷</span><span>Módulos</span></button></nav>' +
+    return '<nav class="mobile-bottom-nav" aria-label="Navegação móvel">' +
+      '<button type="button" data-mobile-view="dashboard">Painel</button>' +
+      '<button type="button" data-mobile-view="fluxo">Fluxograma</button>' +
+      '<button type="button" data-mobile-view="w2h">5W2H</button>' +
+      '<button type="button" data-mobile-modules aria-expanded="false" aria-controls="mobileModuleDrawer">Módulos</button>' +
+      '</nav>' +
       '<div class="mobile-module-overlay" id="mobileModuleDrawer" hidden>' +
       '<section class="mobile-module-drawer" role="dialog" aria-modal="true" aria-labelledby="mobileDrawerTitle" tabindex="-1">' +
       '<div class="mobile-module-drawer-head"><h2 id="mobileDrawerTitle">Módulos</h2>' +
-      '<button type="button" class="mobile-module-close" aria-label="Fechar menu de módulos">×</button></div>' +
+      '<button type="button" class="mobile-module-close" aria-label="Fechar menu de módulos" title="Fechar">×</button></div>' +
       '<div class="mobile-module-links" id="mobileModuleLinks"></div></section></div>';
   }
 
   function addMobileNavigation() {
     if (document.querySelector('.mobile-bottom-nav')) return;
     document.body.insertAdjacentHTML('beforeend', mobileNavMarkup());
+
     const bar = document.querySelector('.mobile-bottom-nav');
     const overlay = document.querySelector('.mobile-module-overlay');
     const drawer = document.querySelector('.mobile-module-drawer');
-    const openButton = bar.querySelector('[data-mobile-modules]');
+    const openButton = bar ? bar.querySelector('[data-mobile-modules]') : null;
     const moduleLinks = document.getElementById('mobileModuleLinks');
+
+    if (!bar || !overlay || !drawer || !openButton || !moduleLinks) return;
+
     let drawerCloseTimer = null;
-    const moduleNames = {
-      gut: { label: 'GUT', icon: '▥' },
-      pareto: { label: 'Pareto', icon: '▤' },
-      ishikawa: { label: 'Ishikawa', icon: '⑂' },
-      porques: { label: '5 Porquês', icon: '↳' },
-      users: { label: 'Usuários', icon: '♙' }
-    };
-    ['gut', 'pareto', 'ishikawa', 'porques'].forEach(function (id) {
-      const original = document.querySelector('#tabNav button[data-view="' + id + '"]');
+
+    const moduleList = [
+      { id: 'dashboard', label: 'Painel PDCA' },
+      { id: 'fluxo', label: 'Fluxograma' },
+      { id: 'gut', label: 'Matriz GUT' },
+      { id: 'pareto', label: 'Pareto' },
+      { id: 'ishikawa', label: 'Ishikawa' },
+      { id: 'porques', label: '5 Porquês' },
+      { id: 'w2h', label: 'Plano 5W2H' },
+      { id: 'reports', label: 'Relatórios' }
+    ];
+
+    moduleList.forEach(function (module) {
+      const original = document.querySelector('#tabNav button[data-view="' + module.id + '"]');
       if (!original) return;
-      const item = moduleNames[id];
-      moduleLinks.insertAdjacentHTML('beforeend',
-        '<button type="button" class="mobile-module-link" data-mobile-view="' + id + '">' +
-        '<span class="mobile-nav-icon" aria-hidden="true">' + item.icon + '</span><span>' + item.label + '</span></button>');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'mobile-module-link';
+      button.dataset.mobileView = module.id;
+      button.textContent = module.label;
+      moduleLinks.appendChild(button);
     });
-    if (currentUser.role === 'Admin' && document.querySelector('#tabNav button[data-view="users"]')) {
-      moduleLinks.insertAdjacentHTML('beforeend',
-        '<button type="button" class="mobile-module-link" data-mobile-view="users">' +
-        '<span class="mobile-nav-icon" aria-hidden="true">' + moduleNames.users.icon + '</span><span>' + moduleNames.users.label + '</span></button>');
+
+    if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'ADMIN')) {
+      const adminUserButton = document.querySelector('#tabNav button[data-view="users"]');
+      if (adminUserButton) {
+        const adminButton = document.createElement('button');
+        adminButton.type = 'button';
+        adminButton.className = 'mobile-module-link';
+        adminButton.dataset.mobileView = 'users';
+        adminButton.textContent = 'Usuários';
+        moduleLinks.appendChild(adminButton);
+      }
     }
 
     function closeDrawer(restoreFocus) {
       window.clearTimeout(drawerCloseTimer);
       overlay.classList.remove('is-open');
-      drawerCloseTimer = window.setTimeout(function () { overlay.hidden = true; }, 230);
+      overlay.style.pointerEvents = 'none';
+      drawerCloseTimer = window.setTimeout(function () {
+        overlay.hidden = true;
+        overlay.style.pointerEvents = 'none';
+      }, 230);
       openButton.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('mobile-drawer-open');
       if (restoreFocus) openButton.focus();
     }
+
     function openDrawer() {
       window.clearTimeout(drawerCloseTimer);
       overlay.hidden = false;
-      window.requestAnimationFrame(function () { overlay.classList.add('is-open'); });
+      overlay.style.pointerEvents = 'auto';
+      window.requestAnimationFrame(function () {
+        overlay.classList.add('is-open');
+        overlay.style.pointerEvents = 'auto';
+      });
       openButton.setAttribute('aria-expanded', 'true');
       document.body.classList.add('mobile-drawer-open');
       const firstLink = moduleLinks.querySelector('button:not([hidden])');
       (firstLink || drawer.querySelector('.mobile-module-close')).focus();
     }
+
     function syncMobileNavigation() {
       const active = document.querySelector('#tabNav button.active[data-view]');
       const activeView = active ? active.dataset.view : 'dashboard';
@@ -538,29 +560,46 @@
       openButton.setAttribute('aria-current', isDirectView ? 'false' : 'page');
       bar.querySelectorAll('[data-mobile-view]').forEach(function (button) {
         const isActive = button.dataset.mobileView === activeView;
-        if (button.closest('.mobile-module-links')) {
-          button.setAttribute('aria-current', isActive ? 'page' : 'false');
-        } else if (button.dataset.mobileView) {
-          button.setAttribute('aria-current', isActive ? 'page' : 'false');
-        }
+        button.setAttribute('aria-current', isActive ? 'page' : 'false');
       });
     }
+
+    function navigateToView(viewId) {
+      const original = document.querySelector('#tabNav button[data-view="' + viewId + '"]');
+      if (original && !original.hidden) {
+        original.click();
+      }
+      closeDrawer(false);
+      syncMobileNavigation();
+    }
+
     bar.addEventListener('click', function (event) {
       const button = event.target.closest('[data-mobile-view]');
       if (!button) return;
-      const original = document.querySelector('#tabNav button[data-view="' + button.dataset.mobileView + '"]');
-      if (original && !original.hidden) original.click();
-      closeDrawer(false);
-      syncMobileNavigation();
+      navigateToView(button.dataset.mobileView);
     });
-    openButton.addEventListener('click', function () {
+
+    moduleLinks.addEventListener('click', function (event) {
+      const button = event.target.closest('[data-mobile-view]');
+      if (!button) return;
+      navigateToView(button.dataset.mobileView);
+    });
+
+    openButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
       if (overlay.hidden) openDrawer();
       else closeDrawer(false);
     });
-    drawer.querySelector('.mobile-module-close').addEventListener('click', function () { closeDrawer(true); });
+
+    drawer.querySelector('.mobile-module-close').addEventListener('click', function () {
+      closeDrawer(true);
+    });
+
     overlay.addEventListener('click', function (event) {
       if (event.target === overlay) closeDrawer(true);
     });
+
     document.addEventListener('keydown', function (event) {
       if (overlay.hidden) return;
       if (event.key === 'Escape') {
@@ -580,14 +619,17 @@
         }
       }
     });
+
     document.getElementById('tabNav').addEventListener('click', function () {
       syncMobileNavigation();
       closeDrawer(false);
     });
+
     syncMobileNavigation();
   }
   function bootApp() {
     loadAuthStyles();
+    if (new URLSearchParams(window.location.search).get('mode') === 'simple') return;
     ensureData();
     currentUser = sessionUser();
     if (!currentUser) {
@@ -601,9 +643,117 @@
     applyPermissions();
   }
 
-  if (document.body.dataset.page === 'login') {
-    login();
-  } else {
-    bootApp();
+  /* JWT em cookie HttpOnly; a interface não lê nem guarda credenciais/tokens. */
+  // Vite encaminha /api ao Spring; em produção, a API usa a mesma origem.
+  const API = window.SGQ_API_BASE || '';
+  const featureModules = [
+    ['dashboard','Painel PDCA'],['fluxo','Fluxograma, POP e Checklist'],['gut','Matriz GUT'],['pareto','Pareto'],
+    ['ishikawa','Ishikawa'],['porques','5 Porquês'],['w2h','Plano 5W2H'],['reports','Relatórios']
+  ];
+  function csrfValue() {
+    const match = document.cookie.match(/(?:^|; )SGQ_CSRF=([^;]*)/);
+    return match ? decodeURIComponent(match[1]) : '';
   }
+  async function api(path, options) {
+    const opts = options || {};
+    const headers = new Headers(opts.headers || {});
+    if (opts.body) headers.set('Content-Type', 'application/json');
+    if (opts.method && !['GET','HEAD','OPTIONS'].includes(opts.method.toUpperCase())) headers.set('X-CSRF-TOKEN', csrfValue());
+    const response = await fetch(API + path, { ...opts, headers, credentials: 'include' });
+    if (response.status === 204) return null;
+    const data = await response.json().catch(function(){ return {}; });
+    if (!response.ok) throw new Error(data.error || 'Não foi possível concluir a solicitação.');
+    return data;
+  }
+  function messageFor(error) { return error && error.message ? error.message : 'Falha de comunicação com o servidor.'; }
+  function enableLogin() {
+    const form = document.getElementById('loginForm');
+    if (!form) return;
+    const message = document.getElementById('loginMessage');
+    const button = document.getElementById('loginSubmit');
+    const register = document.getElementById('registerForm');
+    const toggle = document.getElementById('showRegister');
+    const forgot = document.getElementById('forgotPassword');
+    if (document.getElementById('defaultAdminNotice')) document.getElementById('defaultAdminNotice').hidden = true;
+    if (toggle) toggle.addEventListener('click', function(){ form.hidden = !form.hidden; register.hidden = !register.hidden; toggle.textContent = register.hidden ? 'Criar uma conta' : 'Já tenho uma conta'; });
+    if (forgot) forgot.addEventListener('click', function(){ message.textContent = 'Peça ao administrador para redefinir sua senha.'; });
+    form.addEventListener('submit', async function(event){
+      event.preventDefault();
+      const emailInput=document.getElementById('loginEmail'), passwordInput=document.getElementById('loginPassword');
+      if(!emailInput.value.trim() || !emailInput.checkValidity()){message.textContent='Informe um endereço de e-mail válido.';emailInput.focus();return;}
+      if(!passwordInput.value){message.textContent='Informe sua senha.';passwordInput.focus();return;}
+      event.preventDefault(); message.textContent=''; button.disabled=true; button.textContent='Entrando…';
+      try { await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginPassword').value})}); location.replace('./app.html'); }
+      catch(error){ message.textContent=messageFor(error); button.disabled=false; button.textContent='Entrar'; }
+    });
+    if (register) register.addEventListener('submit', async function(event){
+      event.preventDefault(); const feedback=document.getElementById('registerMessage'); const submit=register.querySelector('button[type="submit"]');
+      feedback.textContent='';
+      if(!register.checkValidity()){feedback.textContent='Preencha nome, e-mail e senha conforme indicado.';register.reportValidity();return;}
+      submit.disabled=true;
+      try { await api('/api/auth/register',{method:'POST',body:JSON.stringify({name:document.getElementById('registerName').value.trim(),email:document.getElementById('registerEmail').value.trim(),password:document.getElementById('registerPassword').value})}); location.replace('./app.html'); }
+      catch(error){ feedback.textContent=messageFor(error); submit.disabled=false; }
+    });
+  }
+  function hasPermission(module, action) { return currentUser.role === 'ADMIN' || currentUser.permissions.includes(module+':'+action); }
+  function setupPermissionGuards() {
+    featureModules.forEach(function(item){
+      const nav=document.querySelector('#tabNav [data-view="'+item[0]+'"]'); const view=document.getElementById('view-'+item[0]);
+      const visible=hasPermission(item[0],'view'); if(nav) nav.hidden=!visible;
+      document.querySelectorAll('[data-mobile-view="'+item[0]+'"]').forEach(button=>button.hidden=!visible);
+      if(view && !visible && view.classList.contains('active')) { const first=featureModules.find(m=>hasPermission(m[0],'view')); if(first) document.querySelector('#tabNav [data-view="'+first[0]+'"]').click(); }
+      if(view) view.querySelectorAll('input,textarea,select,button').forEach(function(control){
+        if(control.matches('[data-auth-keep]')) return;
+        const label=((control.textContent||'')+' '+(control.getAttribute('aria-label')||'')).toLowerCase();
+        const action=/excluir|remover|apagar|delete|🗑|✕/.test(label)?'delete':'edit';
+        if(!visible || !hasPermission(item[0],action)){ control.disabled=true; control.setAttribute('aria-disabled','true'); control.title='Seu perfil não tem permissão para esta ação.'; }
+      });
+    });
+  }
+  function renderAdminView() {
+    if(currentUser.role!=='ADMIN') return;
+    const nav=document.getElementById('tabNav');
+    const button=document.createElement('button'); button.dataset.view='users'; button.innerHTML='<span class="num">ADM</span> Usuários'; nav.appendChild(button);
+    const view=document.createElement('section'); view.className='view'; view.id='view-users';
+    view.innerHTML='<h2 class="view-title">Gestão de usuários <span class="tag">Admin</span></h2><p class="view-desc">Cadastre contas e selecione quais módulos e ações cada usuário pode acessar. As permissões são conferidas pelo servidor.</p><button class="btn orange" id="apiNewUser">Novo usuário</button><div id="apiUserForm"></div><div class="auth-table-wrap"><table class="auth-users-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead><tbody id="apiUsersRows"></tbody></table></div>';
+    document.querySelector('main.content').appendChild(view);
+    document.getElementById('apiNewUser').addEventListener('click',function(){ showApiUserForm(null); });
+    loadUsers();
+  }
+  async function loadUsers() {
+    try { const users=await api('/api/admin/users'); const body=document.getElementById('apiUsersRows'); if(!body) return;
+      body.innerHTML=users.map(function(user){return '<tr><td>'+escapeHTML(user.name)+'</td><td>'+escapeHTML(user.email)+'</td><td>'+user.role+'</td><td>'+(user.active?'Ativo':'Inativo')+'</td><td><button type="button" class="btn small ghost" data-user-edit="'+user.id+'">Editar</button> <button type="button" class="btn small ghost" data-user-delete="'+user.id+'">Excluir</button></td></tr>';}).join('');
+      body.querySelectorAll('[data-user-edit]').forEach(b=>b.addEventListener('click',()=>showApiUserForm(users.find(u=>String(u.id)===b.dataset.userEdit))));
+      body.querySelectorAll('[data-user-delete]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Excluir este usuário? Esta ação não pode ser desfeita.'))return;try{await api('/api/admin/users/'+b.dataset.userDelete,{method:'DELETE'});await loadUsers();toast('Usuário excluído.');}catch(e){toast(messageFor(e));}}));
+    } catch(error){ toast(messageFor(error)); }
+  }
+  function showApiUserForm(user) {
+    const host=document.getElementById('apiUserForm'), editing=!!user;
+    const controls=featureModules.flatMap(function(item){return ['view','edit','delete'].map(function(action){const key=item[0]+':'+action;const checked=editing ? user.permissions.includes(key) : (action==='view' || action==='edit');return '<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="permissions" value="'+key+'" '+(checked?'checked':'')+'> '+escapeHTML(item[1])+' — '+action+'</label>';});}).join('');
+    host.innerHTML='<form id="apiManagedUser" class="auth-user-form"><h3>'+(editing?'Editar usuário':'Novo usuário')+'</h3><div class="auth-form-grid"><div><label for="apiUserName">Nome</label><input id="apiUserName" required maxlength="100" value="'+escapeHTML(editing?user.name:'')+'"></div><div><label for="apiUserEmail">E-mail</label><input id="apiUserEmail" type="email" required maxlength="254" value="'+escapeHTML(editing?user.email:'')+'"></div><div><label for="apiUserRole">Perfil</label><select id="apiUserRole"><option value="USER" '+(!editing||user.role==='USER'?'selected':'')+'>USER</option><option value="ADMIN" '+(editing&&user.role==='ADMIN'?'selected':'')+'>ADMIN</option></select></div><div><label for="apiUserPassword">Senha '+(editing?'(deixe vazio para manter)':'(mínimo 10 caracteres)')+'</label><input id="apiUserPassword" type="password" '+(editing?'':'required minlength="10"')+' maxlength="72" autocomplete="new-password"></div><div><label><input id="apiUserActive" type="checkbox" '+(!editing||user.active?'checked':'')+'> Conta ativa</label></div></div><fieldset><legend>Permissões do perfil USER</legend><div class="auth-form-grid">'+controls+'</div></fieldset><p class="auth-inline-error" role="alert"></p><div class="row-actions"><button class="btn orange" type="submit">Salvar usuário</button><button class="btn ghost" type="button" id="apiCancelUser">Cancelar</button></div></form>';
+    const form=document.getElementById('apiManagedUser'); document.getElementById('apiCancelUser').addEventListener('click',()=>host.replaceChildren());
+    form.addEventListener('submit',async function(event){event.preventDefault();const error=form.querySelector('.auth-inline-error');const password=document.getElementById('apiUserPassword').value;const payload={name:document.getElementById('apiUserName').value.trim(),email:document.getElementById('apiUserEmail').value.trim(),role:document.getElementById('apiUserRole').value,active:document.getElementById('apiUserActive').checked,permissions:Array.from(form.querySelectorAll('[name="permissions"]:checked')).map(x=>x.value)};if(password)payload.password=password;else if(!editing){error.textContent='Informe uma senha inicial.';return;}
+      try{await api(editing?'/api/admin/users/'+user.id:'/api/admin/users',{method:editing?'PUT':'POST',body:JSON.stringify(payload)});host.replaceChildren();await loadUsers();toast('Usuário salvo.');}catch(e){error.textContent=messageFor(e);}
+    });
+  }
+  async function bootOnlineApp() {
+    if(new URLSearchParams(location.search).get('mode')==='simple') return;
+    const privateContent=document.querySelector('.app-body'); if(privateContent) privateContent.hidden=true;
+    loadAuthStyles();
+    if(document.body.dataset.page==='login'){ enableLogin(); return; }
+    try {
+      currentUser=await api('/api/auth/me');
+      if(privateContent) privateContent.hidden=false;
+      const header=document.querySelector('header.app-header');
+      if(header){const account=document.createElement('div');account.className='auth-account';account.innerHTML='<span class="auth-account-name">'+escapeHTML(currentUser.name)+'<small>'+currentUser.role+'</small></span><button type="button" class="auth-logout">Sair</button>';header.appendChild(account);account.querySelector('button').addEventListener('click',async()=>{try{await api('/api/auth/logout',{method:'POST'});}finally{location.replace('./login.html');}});}
+      if(typeof saveDB==='function'){
+        const localSave=saveDB; let queue=Promise.resolve();
+        saveDB=function(){localSave();const snapshot=JSON.stringify(DB);queue=queue.then(()=>api('/api/workspace',{method:'PUT',body:snapshot})).then(()=>{const s=document.getElementById('sgqSaveStatus');if(s)s.textContent='Salvo no servidor às '+new Date().toLocaleTimeString('pt-BR');}).catch(error=>{if(typeof toast==='function')toast('Falha ao salvar no servidor: '+messageFor(error));});return queue;};
+        const serverData=await api('/api/workspace'); DB=Object.assign(DB,serverData); initAll();
+      }
+      renderAdminView(); addMobileNavigation(); setupPermissionGuards();
+    } catch(error){ if(error.message==='Failed to fetch') toast('Servidor indisponível.'); location.replace('./login.html'); }
+  }
+  if(new URLSearchParams(location.search).get('mode')==='simple') { loadAuthStyles(); addMobileNavigation(); }
+  else bootOnlineApp();
 })();

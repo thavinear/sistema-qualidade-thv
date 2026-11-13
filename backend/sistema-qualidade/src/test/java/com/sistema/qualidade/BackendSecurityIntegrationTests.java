@@ -85,6 +85,16 @@ class BackendSecurityIntegrationTests {
         org.junit.jupiter.api.Assertions.assertFalse(users.existsByEmailIgnoreCase("operator@test.local"));
     }
 
+    @Test void adminGetsClearValidationMessageWhenCreatingUserWithoutPassword() throws Exception {
+        String request="""
+                {"name":"Operador","email":"operator@test.local","password":"","role":"USER","active":true,"permissions":["gut:view"]}
+                """;
+        mvc.perform(post("/api/admin/users").cookie(adminCookieObjects()).header("X-CSRF-TOKEN",adminCsrf)
+                        .contentType(MediaType.APPLICATION_JSON).content(request))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fields.password", containsString("senha")));
+    }
+
     @Test void adminCanUpdateUserWithBlankPasswordAndKeepExistingPassword() throws Exception {
         UserAccount operator=users.save(new UserAccount("Operador","operator@test.local",encoder.encode("OperatorPass123!"),Role.USER));
         String previousHash=operator.getPasswordHash();

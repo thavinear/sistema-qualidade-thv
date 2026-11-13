@@ -18,7 +18,7 @@ public class AdminUserService {
     public AdminUserService(UserRepository users, PasswordEncoder passwords, WorkspaceRepository workspaces) { this.users=users; this.passwords=passwords; this.workspaces=workspaces; }
     @Transactional(readOnly=true) public List<UserResponse> list() { return users.findAll().stream().map(UserResponse::from).toList(); }
     @Transactional
-    public UserResponse create(UserRequest request) {
+    public UserResponse create(UserCreateRequest request) {
         validatePermissions(request.permissions());
         String email=AuthService.normalize(request.email());
         if(users.existsByEmailIgnoreCase(email)) throw new ResponseStatusException(HttpStatus.CONFLICT,"E-mail já cadastrado.");

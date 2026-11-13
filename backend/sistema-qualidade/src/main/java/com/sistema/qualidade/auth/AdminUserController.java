@@ -14,7 +14,7 @@ public class AdminUserController {
     private final AdminUserService service;
     public AdminUserController(AdminUserService service) { this.service=service; }
     @GetMapping public List<UserResponse> list() { return service.list(); }
-    @PostMapping @ResponseStatus(HttpStatus.CREATED) public UserResponse create(@Valid @RequestBody UserRequest request) { return service.create(request); }
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) public UserResponse create(@Valid @RequestBody UserCreateRequest request) { return service.create(request); }
     @PutMapping("/{id}") public UserResponse update(@PathVariable long id, @Valid @RequestBody UserRequest request, @AuthenticationPrincipal UserAccount actor) { return service.update(id,request,actor); }
     @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT) public void delete(@PathVariable long id, @AuthenticationPrincipal UserAccount actor) { service.delete(id,actor); }
 }

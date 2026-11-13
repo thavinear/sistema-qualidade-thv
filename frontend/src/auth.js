@@ -662,7 +662,10 @@
     const response = await fetch(API + path, { ...opts, headers, credentials: 'include' });
     if (response.status === 204) return null;
     const data = await response.json().catch(function(){ return {}; });
-    if (!response.ok) throw new Error(data.error || 'Não foi possível concluir a solicitação.');
+    if (!response.ok) {
+      const fields=data.fields?Object.entries(data.fields).map(function(entry){return entry[0]+': '+entry[1];}).join(' '):'';
+      throw new Error(fields?(data.error||'Dados inválidos.')+' '+fields:(data.error||'Não foi possível concluir a solicitação.'));
+    }
     return data;
   }
   function messageFor(error) { return error && error.message ? error.message : 'Falha de comunicação com o servidor.'; }
@@ -715,25 +718,44 @@
     const nav=document.getElementById('tabNav');
     const button=document.createElement('button'); button.dataset.view='users'; button.innerHTML='<span class="num">ADM</span> Usuários'; nav.appendChild(button);
     const view=document.createElement('section'); view.className='view'; view.id='view-users';
-    view.innerHTML='<h2 class="view-title">Gestão de usuários <span class="tag">Admin</span></h2><p class="view-desc">Cadastre contas e selecione quais módulos e ações cada usuário pode acessar. As permissões são conferidas pelo servidor.</p><button class="btn orange" id="apiNewUser">Novo usuário</button><div id="apiUserForm"></div><div class="auth-table-wrap"><table class="auth-users-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead><tbody id="apiUsersRows"></tbody></table></div>';
+    view.innerHTML='<a class="btn ghost auth-admin-back" href="./app.html">← Voltar para o Dashboard</a><h2 class="view-title">Gestão de usuários <span class="tag">Admin</span></h2><p class="view-desc">Cadastre contas e selecione quais módulos e ações cada usuário pode acessar. As permissões são conferidas pelo servidor.</p><button class="btn orange" id="apiNewUser">Novo usuário</button><div id="apiUserForm"></div><p id="apiUsersStatus" class="auth-users-status" role="status" aria-live="polite">Carregando usuários...</p><div class="auth-table-wrap"><table class="auth-users-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead><tbody id="apiUsersRows"></tbody></table></div>';
+    const viewUsersButton=document.createElement('button');
+    viewUsersButton.type='button'; viewUsersButton.id='apiViewUsers'; viewUsersButton.className='btn orange auth-view-users'; viewUsersButton.textContent='Ver Usuários';
+    view.insertBefore(viewUsersButton,view.querySelector('#apiNewUser'));
+    viewUsersButton.addEventListener('click',function(){document.querySelector('.auth-table-wrap')?.scrollIntoView({behavior:'smooth',block:'start'});});
     document.querySelector('main.content').appendChild(view);
     document.getElementById('apiNewUser').addEventListener('click',function(){ showApiUserForm(null); });
     loadUsers();
   }
   async function loadUsers() {
-    try { const users=await api('/api/admin/users'); const body=document.getElementById('apiUsersRows'); if(!body) return;
-      body.innerHTML=users.map(function(user){return '<tr><td>'+escapeHTML(user.name)+'</td><td>'+escapeHTML(user.email)+'</td><td>'+user.role+'</td><td>'+(user.active?'Ativo':'Inativo')+'</td><td><button type="button" class="btn small ghost" data-user-edit="'+user.id+'">Editar</button> <button type="button" class="btn small ghost" data-user-delete="'+user.id+'">Excluir</button></td></tr>';}).join('');
-      body.querySelectorAll('[data-user-edit]').forEach(b=>b.addEventListener('click',()=>showApiUserForm(users.find(u=>String(u.id)===b.dataset.userEdit))));
-      body.querySelectorAll('[data-user-delete]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Excluir este usuário? Esta ação não pode ser desfeita.'))return;try{await api('/api/admin/users/'+b.dataset.userDelete,{method:'DELETE'});await loadUsers();toast('Usuário excluído.');}catch(e){toast(messageFor(e));}}));
-    } catch(error){ toast(messageFor(error)); }
+    const body=document.getElementById('apiUsersRows');
+    const status=document.getElementById('apiUsersStatus');
+    if(!body) return;
+    try {
+      const users=await api('/api/admin/users');
+      if(status){status.classList.remove('is-error');status.textContent=users.length?'Usuários cadastrados: '+users.length+'.':'';}
+      body.innerHTML=users.length?users.map(function(user){return '<tr><td>'+escapeHTML(user.name)+'</td><td>'+escapeHTML(user.email)+'</td><td>'+(user.role==='ADMIN'?'Admin':'User')+'</td><td><span class="auth-user-status '+(user.active?'is-active':'is-inactive')+'">'+(user.active?'Ativo':'Inativo')+'</span></td><td><div class="row-actions"><button type="button" class="btn small ghost" data-user-edit="'+user.id+'">Editar</button> <button type="button" class="btn small ghost" data-user-delete="'+user.id+'">Excluir</button></div></td></tr>';}).join(''):'<tr><td colspan="5">Nenhum usuário cadastrado.</td></tr>';
+      body.querySelectorAll('[data-user-edit]').forEach(function(button){button.addEventListener('click',function(){showApiUserForm(users.find(function(user){return String(user.id)===button.dataset.userEdit;}));});});
+      body.querySelectorAll('[data-user-delete]').forEach(function(button){button.addEventListener('click',async function(){const user=users.find(function(item){return String(item.id)===button.dataset.userDelete;});if(!user||!confirm('Excluir '+user.name+'? Esta ação não pode ser desfeita.'))return;button.disabled=true;try{await api('/api/admin/users/'+user.id,{method:'DELETE'});await loadUsers();toast('Usuário excluído com sucesso!');}catch(error){button.disabled=false;toast('Erro ao excluir usuário: '+messageFor(error));}});});
+    } catch(error){
+      body.innerHTML='<tr><td colspan="5">Não foi possível carregar a lista de usuários.</td></tr>';
+      if(status){status.classList.add('is-error');status.textContent='Erro ao carregar usuários: '+messageFor(error);}
+      toast('Erro ao carregar usuários: '+messageFor(error));
+    }
   }
   function showApiUserForm(user) {
     const host=document.getElementById('apiUserForm'), editing=!!user;
     const controls=featureModules.flatMap(function(item){return ['view','edit','delete'].map(function(action){const key=item[0]+':'+action;const checked=editing ? user.permissions.includes(key) : (action==='view' || action==='edit');return '<label style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="permissions" value="'+key+'" '+(checked?'checked':'')+'> '+escapeHTML(item[1])+' — '+action+'</label>';});}).join('');
     host.innerHTML='<form id="apiManagedUser" class="auth-user-form"><h3>'+(editing?'Editar usuário':'Novo usuário')+'</h3><div class="auth-form-grid"><div><label for="apiUserName">Nome</label><input id="apiUserName" required maxlength="100" value="'+escapeHTML(editing?user.name:'')+'"></div><div><label for="apiUserEmail">E-mail</label><input id="apiUserEmail" type="email" required maxlength="254" value="'+escapeHTML(editing?user.email:'')+'"></div><div><label for="apiUserRole">Perfil</label><select id="apiUserRole"><option value="USER" '+(!editing||user.role==='USER'?'selected':'')+'>USER</option><option value="ADMIN" '+(editing&&user.role==='ADMIN'?'selected':'')+'>ADMIN</option></select></div><div><label for="apiUserPassword">Senha '+(editing?'(deixe vazio para manter)':'(mínimo 10 caracteres)')+'</label><input id="apiUserPassword" type="password" '+(editing?'':'required minlength="10"')+' maxlength="72" autocomplete="new-password"></div><div><label><input id="apiUserActive" type="checkbox" '+(!editing||user.active?'checked':'')+'> Conta ativa</label></div></div><fieldset><legend>Permissões do perfil USER</legend><div class="auth-form-grid">'+controls+'</div></fieldset><p class="auth-inline-error" role="alert"></p><div class="row-actions"><button class="btn orange" type="submit">Salvar usuário</button><button class="btn ghost" type="button" id="apiCancelUser">Cancelar</button></div></form>';
-    const form=document.getElementById('apiManagedUser'); document.getElementById('apiCancelUser').addEventListener('click',()=>host.replaceChildren());
+    const form=document.getElementById('apiManagedUser');
+    const dialog=document.createElement('dialog'); dialog.className='auth-user-dialog'; dialog.setAttribute('aria-labelledby','apiUserFormTitle');
+    form.querySelector('h3').id='apiUserFormTitle';
+    host.replaceChildren(dialog); dialog.appendChild(form); dialog.showModal();
+    document.body.classList.add('auth-modal-open');
+    dialog.addEventListener('close',function(){document.body.classList.remove('auth-modal-open');host.replaceChildren();});
+    document.getElementById('apiCancelUser').addEventListener('click',()=>dialog.close());
     form.addEventListener('submit',async function(event){event.preventDefault();const error=form.querySelector('.auth-inline-error');const password=document.getElementById('apiUserPassword').value;const payload={name:document.getElementById('apiUserName').value.trim(),email:document.getElementById('apiUserEmail').value.trim(),role:document.getElementById('apiUserRole').value,active:document.getElementById('apiUserActive').checked,permissions:Array.from(form.querySelectorAll('[name="permissions"]:checked')).map(x=>x.value)};if(password)payload.password=password;else if(!editing){error.textContent='Informe uma senha inicial.';return;}
-      try{await api(editing?'/api/admin/users/'+user.id:'/api/admin/users',{method:editing?'PUT':'POST',body:JSON.stringify(payload)});host.replaceChildren();await loadUsers();toast('Usuário salvo.');}catch(e){error.textContent=messageFor(e);}
+      try{await api(editing?'/api/admin/users/'+user.id:'/api/admin/users',{method:editing?'PUT':'POST',body:JSON.stringify(payload)});dialog.close();await loadUsers();toast(editing?'Usuário atualizado com sucesso!':'Usuário criado com sucesso!');}catch(e){error.textContent=(editing?'Erro ao atualizar usuário: ':'Erro ao criar usuário: ')+messageFor(e);}
     });
   }
   async function bootOnlineApp() {

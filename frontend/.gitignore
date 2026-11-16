@@ -1,4 +1,4 @@
-﻿# Dependências
+# Dependências
 node_modules/
 package-lock.json
 
@@ -27,3 +27,5 @@ Thumbs.db
 *.bak
 cypress/screenshots/
 cypress/videos/
+.env.production
+.env

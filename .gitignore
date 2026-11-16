@@ -1,4 +1,4 @@
-# Node
+﻿# Node
 node_modules/
 npm-debug.log*
 yarn-error.log*
@@ -48,3 +48,16 @@ frontend/cypress/videos/
 # Legacy snapshots retained outside the application
 *.old.*
 *.bak
+.env.production
+frontend/cypress.config.js
+frontend/dist/
+sgq-pre-cleanup-*/
+backend_sistema-*/
+backend-build-aft*/
+frontend_bak/
+frontend_dist/
+frontend_frontend/
+frontend-dist-afte*/
+cypress-evidence/
+frontend_cypress-*/
+

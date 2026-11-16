@@ -1,18 +1,21 @@
-FROM gradle:8.7-jdk17 AS build
+FROM eclipse-temurin:17-jdk AS build
+WORKDIR /workspace
 
-WORKDIR /app
+COPY gradlew ./
+COPY gradle ./gradle
+COPY build.gradle settings.gradle ./
+COPY src ./src
 
-COPY . .
-
-RUN chmod +x gradlew
-RUN ./gradlew bootJar -x test
+RUN chmod +x gradlew \
+ && ./gradlew --no-daemon bootJar -x test \
+ && find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-plain.jar' -exec cp {} /workspace/app.jar \;
 
 FROM eclipse-temurin:17-jre
-
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /workspace/app.jar /app/app.jar
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
 EXPOSE 8080
-
-CMD ["java", "-Dserver.port=8080", "-jar", "app.jar"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

@@ -645,7 +645,7 @@
 
   /* JWT em cookie HttpOnly; a interface não lê nem guarda credenciais/tokens. */
   // Vite encaminha /api ao Spring; em produção, a API usa a mesma origem.
-  const API = window.SGQ_API_BASE || '';
+  const API = (window.SGQ_API_BASE || import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
   const featureModules = [
     ['dashboard','Painel PDCA'],['fluxo','Fluxograma, POP e Checklist'],['gut','Matriz GUT'],['pareto','Pareto'],
     ['ishikawa','Ishikawa'],['porques','5 Porquês'],['w2h','Plano 5W2H'],['reports','Relatórios']
@@ -659,7 +659,8 @@
     const headers = new Headers(opts.headers || {});
     if (opts.body) headers.set('Content-Type', 'application/json');
     if (opts.method && !['GET','HEAD','OPTIONS'].includes(opts.method.toUpperCase())) headers.set('X-CSRF-TOKEN', csrfValue());
-    const response = await fetch(API + path, { ...opts, headers, credentials: 'include' });
+    const endpoint = API.endsWith('/api') ? path.replace(/^\/api(?=\/)/, '') : path;
+    const response = await fetch(API + endpoint, { ...opts, headers, credentials: 'include' });
     if (response.status === 204) return null;
     const data = await response.json().catch(function(){ return {}; });
     if (!response.ok) {

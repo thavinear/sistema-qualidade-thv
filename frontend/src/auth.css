@@ -20,6 +20,30 @@
   padding: 32px;
   box-shadow: 0 12px 36px rgba(0, 40, 77, .12);
 }
+.login-card-top {
+  display: flex;
+  justify-content: flex-start;
+  margin: -4px 0 18px;
+}
+.login-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4c5c6e;
+  font: 600 13px 'IBM Plex Sans', Arial, sans-serif;
+  text-decoration: none;
+  transition: color .2s ease, opacity .2s ease;
+}
+.login-back-link:hover,
+.login-back-link:focus-visible {
+  color: #f47b20;
+  text-decoration: none;
+}
+.login-back-link:focus-visible {
+  outline: 3px solid #f47b20;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
 .login-logo-wrap {
   display: flex;
   justify-content: center;

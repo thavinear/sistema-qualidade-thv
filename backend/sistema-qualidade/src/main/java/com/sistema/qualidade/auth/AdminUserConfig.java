@@ -19,16 +19,22 @@ public class AdminUserConfig {
 
             if (existsCanonical || existsLegacy) {
                 String existingEmail = existsCanonical ? canonicalEmail : legacyEmail;
+                UserAccount existingAdmin = userRepository.findByEmailIgnoreCase(existingEmail).orElseThrow();
+                if (passwordEncoder.matches("admin123", existingAdmin.getPasswordHash())) {
+                    existingAdmin.setPasswordHash(passwordEncoder.encode("senhasupersegura2026"));
+                    userRepository.save(existingAdmin);
+                    System.out.println("Default administrator password migrated.");
+                }
                 System.out.println("Usuário admin já existe: " + existingEmail);
                 return;
             }
 
-            UserAccount admin = new UserAccount("Administrador", canonicalEmail, passwordEncoder.encode("admin123"), Role.ADMIN);
+            UserAccount admin = new UserAccount("Administrador", canonicalEmail, passwordEncoder.encode("senhasupersegura2026"), Role.ADMIN);
             admin.setActive(true);
             admin.setRole(Role.ADMIN);
             userRepository.save(admin);
 
-            System.out.println("Usuário admin criado com sucesso: " + canonicalEmail + " / admin123");
+            System.out.println("Admin user created successfully: " + canonicalEmail);
         };
     }
 }

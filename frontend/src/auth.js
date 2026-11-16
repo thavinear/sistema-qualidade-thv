@@ -769,7 +769,6 @@
     try {
       document.querySelectorAll('header.app-header .auth-logout').forEach(button=>button.addEventListener('click',logout));
       currentUser=await api('/api/auth/me');
-      if(privateContent) privateContent.hidden=false;
       const header=document.querySelector('header.app-header');
       if(header){const account=document.createElement('div');account.className='auth-account';account.innerHTML='<span class="auth-account-name">'+escapeHTML(currentUser.name)+'<small>'+currentUser.role+'</small></span><button type="button" class="auth-logout">Sair</button>';header.appendChild(account);account.querySelector('button').addEventListener('click',logout);}
       if(typeof saveDB==='function'){
@@ -777,6 +776,7 @@
         saveDB=function(){localSave();const snapshot=JSON.stringify(DB);queue=queue.then(()=>api('/api/workspace',{method:'PUT',body:snapshot})).then(()=>{const s=document.getElementById('sgqSaveStatus');if(s)s.textContent='Salvo no servidor às '+new Date().toLocaleTimeString('pt-BR');}).catch(error=>{if(typeof toast==='function')toast('Falha ao salvar no servidor: '+messageFor(error));});return queue;};
         const serverData=await api('/api/workspace'); DB=Object.assign(DB,serverData); initAll();
       }
+      if(privateContent) privateContent.hidden=false;
       renderAdminView(); addMobileNavigation(); setupPermissionGuards();
     } catch(error){ if(error.message==='Failed to fetch') toast('Servidor indisponível.'); location.replace('./login.html'); }
   }

@@ -645,7 +645,8 @@
 
   /* JWT em cookie HttpOnly; a interface não lê nem guarda credenciais/tokens. */
   // Vite encaminha /api ao Spring; em produção, a API usa a mesma origem.
-  const API = (window.SGQ_API_BASE || import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+  const API_URL = import.meta.env.VITE_API_URL || '/api';
+  const API_BASE = (window.SGQ_API_BASE || API_URL).replace(/\/+$/, '');
   const featureModules = [
     ['dashboard','Painel PDCA'],['fluxo','Fluxograma, POP e Checklist'],['gut','Matriz GUT'],['pareto','Pareto'],
     ['ishikawa','Ishikawa'],['porques','5 Porquês'],['w2h','Plano 5W2H'],['reports','Relatórios']
@@ -654,13 +655,14 @@
     const match = document.cookie.match(/(?:^|; )SGQ_CSRF=([^;]*)/);
     return match ? decodeURIComponent(match[1]) : '';
   }
+  async function logout() { try { await api('/api/auth/logout', { method: 'POST' }); } finally { location.replace('./login.html'); } }
   async function api(path, options) {
     const opts = options || {};
     const headers = new Headers(opts.headers || {});
     if (opts.body) headers.set('Content-Type', 'application/json');
     if (opts.method && !['GET','HEAD','OPTIONS'].includes(opts.method.toUpperCase())) headers.set('X-CSRF-TOKEN', csrfValue());
-    const endpoint = API.endsWith('/api') ? path.replace(/^\/api(?=\/)/, '') : path;
-    const response = await fetch(API + endpoint, { ...opts, headers, credentials: 'include' });
+    const endpoint = API_BASE.endsWith('/api') ? path.replace(/^\/api(?=\/)/, '') : path;
+    const response = await fetch(API_BASE + endpoint, { ...opts, headers, credentials: 'include' });
     if (response.status === 204) return null;
     const data = await response.json().catch(function(){ return {}; });
     if (!response.ok) {
@@ -765,10 +767,11 @@
     loadAuthStyles();
     if(document.body.dataset.page==='login'){ enableLogin(); return; }
     try {
+      document.querySelectorAll('header.app-header .auth-logout').forEach(button=>button.addEventListener('click',logout));
       currentUser=await api('/api/auth/me');
       if(privateContent) privateContent.hidden=false;
       const header=document.querySelector('header.app-header');
-      if(header){const account=document.createElement('div');account.className='auth-account';account.innerHTML='<span class="auth-account-name">'+escapeHTML(currentUser.name)+'<small>'+currentUser.role+'</small></span><button type="button" class="auth-logout">Sair</button>';header.appendChild(account);account.querySelector('button').addEventListener('click',async()=>{try{await api('/api/auth/logout',{method:'POST'});}finally{location.replace('./login.html');}});}
+      if(header){const account=document.createElement('div');account.className='auth-account';account.innerHTML='<span class="auth-account-name">'+escapeHTML(currentUser.name)+'<small>'+currentUser.role+'</small></span><button type="button" class="auth-logout">Sair</button>';header.appendChild(account);account.querySelector('button').addEventListener('click',logout);}
       if(typeof saveDB==='function'){
         const localSave=saveDB; let queue=Promise.resolve();
         saveDB=function(){localSave();const snapshot=JSON.stringify(DB);queue=queue.then(()=>api('/api/workspace',{method:'PUT',body:snapshot})).then(()=>{const s=document.getElementById('sgqSaveStatus');if(s)s.textContent='Salvo no servidor às '+new Date().toLocaleTimeString('pt-BR');}).catch(error=>{if(typeof toast==='function')toast('Falha ao salvar no servidor: '+messageFor(error));});return queue;};

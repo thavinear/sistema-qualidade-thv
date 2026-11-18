@@ -16,7 +16,7 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(frontendOrigin)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                        .allowedHeaders("Content-Type", "X-CSRF-TOKEN")
+                        .allowedHeaders("Content-Type", "X-CSRF-TOKEN", "X-XSRF-TOKEN")
                         .allowCredentials(true);
             }
         };

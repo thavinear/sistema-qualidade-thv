@@ -659,7 +659,7 @@
     const opts = options || {};
     const headers = new Headers(opts.headers || {});
     if (opts.body) headers.set('Content-Type', 'application/json');
-    if (opts.method && !['GET','HEAD','OPTIONS'].includes(opts.method.toUpperCase())) headers.set('X-CSRF-TOKEN', csrfValue());
+    if (opts.method && !['GET','HEAD','OPTIONS'].includes(opts.method.toUpperCase())) headers.set('X-XSRF-TOKEN', csrfValue());
     const endpoint = path.replace(/^\/api(?=\/)/, '');
     const response = await fetch(API_BASE + endpoint, { ...opts, headers, credentials: 'include' });
     if (response.status === 204) return null;

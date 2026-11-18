@@ -29,7 +29,8 @@ public class CsrfProtectionFilter extends OncePerRequestFilter {
                 String cookieToken=null;
                 Cookie[] cookies=request.getCookies();
                 if(cookies!=null) for(Cookie cookie:cookies) if("SGQ_CSRF".equals(cookie.getName())) cookieToken=cookie.getValue();
-                String headerToken=request.getHeader("X-CSRF-TOKEN");
+                String headerToken=request.getHeader("X-XSRF-TOKEN");
+                if(headerToken==null) headerToken=request.getHeader("X-CSRF-TOKEN");
                 if(cookieToken==null || headerToken==null || !MessageDigest.isEqual(cookieToken.getBytes(StandardCharsets.UTF_8),headerToken.getBytes(StandardCharsets.UTF_8))) {
                     response.sendError(403); return;
                 }

@@ -48,7 +48,7 @@ public class AuthService {
                 .sameSite("Lax").path("/").maxAge(Duration.ZERO).build();
     }
     public ResponseCookie csrfCookie(String token, Duration maxAge) {
-        return ResponseCookie.from("SGQ_CSRF", token).httpOnly(false).secure(secureCookie).sameSite("Lax").path("/").maxAge(maxAge).build();
+        return ResponseCookie.from("SGQ_CSRF", token).httpOnly(false).secure(true).sameSite("Lax").path("/").maxAge(maxAge).build();
     }
     public String newCsrfToken() { return UUID.randomUUID().toString(); }
     public static String normalize(String email) { return email.trim().toLowerCase(java.util.Locale.ROOT); }

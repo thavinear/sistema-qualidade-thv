@@ -19,7 +19,7 @@ public class AuthService {
     private final boolean secureCookie;
     private final String sameSite;
     public AuthService(UserRepository users, PasswordEncoder passwords, JwtService jwt,
-                       @Value("${app.auth.cookie-secure:false}") boolean secureCookie,
+                       @Value("${app.auth.cookie-secure:true}") boolean secureCookie,
                        @Value("${app.auth.cookie-same-site:Lax}") String sameSite) {
         if(!java.util.Set.of("Strict","Lax","None").contains(sameSite)) throw new IllegalStateException("AUTH_COOKIE_SAME_SITE deve ser Strict, Lax ou None.");
         if("None".equals(sameSite) && !secureCookie) throw new IllegalStateException("AUTH_COOKIE_SAME_SITE=None requer AUTH_COOKIE_SECURE=true.");
@@ -40,15 +40,15 @@ public class AuthService {
         return user;
     }
     public ResponseCookie sessionCookie(UserAccount user) {
-        return ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, jwt.issue(user)).httpOnly(true).secure(secureCookie)
-                .sameSite(sameSite).path("/").maxAge(Duration.ofSeconds(jwt.getExpirationSeconds())).build();
+        return ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, jwt.issue(user)).httpOnly(true).secure(true)
+                .sameSite("Lax").path("/").maxAge(Duration.ofSeconds(jwt.getExpirationSeconds())).build();
     }
     public ResponseCookie clearSessionCookie() {
-        return ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, "").httpOnly(true).secure(secureCookie)
-                .sameSite(sameSite).path("/").maxAge(Duration.ZERO).build();
+        return ResponseCookie.from(JwtAuthenticationFilter.COOKIE_NAME, "").httpOnly(true).secure(true)
+                .sameSite("Lax").path("/").maxAge(Duration.ZERO).build();
     }
     public ResponseCookie csrfCookie(String token, Duration maxAge) {
-        return ResponseCookie.from("SGQ_CSRF", token).httpOnly(false).secure(secureCookie).sameSite(sameSite).path("/").maxAge(maxAge).build();
+        return ResponseCookie.from("SGQ_CSRF", token).httpOnly(false).secure(secureCookie).sameSite("Lax").path("/").maxAge(maxAge).build();
     }
     public String newCsrfToken() { return UUID.randomUUID().toString(); }
     public static String normalize(String email) { return email.trim().toLowerCase(java.util.Locale.ROOT); }

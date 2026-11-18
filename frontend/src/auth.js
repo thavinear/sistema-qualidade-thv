@@ -670,7 +670,11 @@
     }
     return data;
   }
-  function messageFor(error) { return error && error.message ? error.message : 'Falha de comunica√ß√£o com o servidor.'; }
+  async function ensureCsrfToken() {
+    if (csrfValue()) return;
+    await api('/api/auth/csrf');
+    if (!csrfValue()) throw new Error('N„o foi possÌvel iniciar a proteÁ„o CSRF. Atualize a p·gina e tente novamente.');
+  }  function messageFor(error) { return error && error.message ? error.message : 'Falha de comunica√ß√£o com o servidor.'; }
   function enableLogin() {
     const form = document.getElementById('loginForm');
     if (!form) return;
@@ -688,7 +692,7 @@
       if(!emailInput.value.trim() || !emailInput.checkValidity()){message.textContent='Informe um endere√ßo de e-mail v√°lido.';emailInput.focus();return;}
       if(!passwordInput.value){message.textContent='Informe sua senha.';passwordInput.focus();return;}
       event.preventDefault(); message.textContent=''; button.disabled=true; button.textContent='Entrando‚Ä¶';
-      try { await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginPassword').value})}); location.replace('./app.html'); }
+      try { await ensureCsrfToken(); await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginPassword').value})}); location.replace('./app.html'); }
       catch(error){ message.textContent=messageFor(error); button.disabled=false; button.textContent='Entrar'; }
     });
     if (register) register.addEventListener('submit', async function(event){
@@ -696,7 +700,7 @@
       feedback.textContent='';
       if(!register.checkValidity()){feedback.textContent='Preencha nome, e-mail e senha conforme indicado.';register.reportValidity();return;}
       submit.disabled=true;
-      try { await api('/api/auth/register',{method:'POST',body:JSON.stringify({name:document.getElementById('registerName').value.trim(),email:document.getElementById('registerEmail').value.trim(),password:document.getElementById('registerPassword').value})}); location.replace('./app.html'); }
+      try { await ensureCsrfToken(); await api('/api/auth/register',{method:'POST',body:JSON.stringify({name:document.getElementById('registerName').value.trim(),email:document.getElementById('registerEmail').value.trim(),password:document.getElementById('registerPassword').value})}); location.replace('./app.html'); }
       catch(error){ feedback.textContent=messageFor(error); submit.disabled=false; }
     });
   }

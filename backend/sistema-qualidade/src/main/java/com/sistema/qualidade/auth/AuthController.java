@@ -14,6 +14,16 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService auth;
     public AuthController(AuthService auth) { this.auth=auth; }
+    @GetMapping("/csrf")
+    public ResponseEntity<CsrfTokenResponse> csrf() {
+        String token = auth.newCsrfToken();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, auth.csrfCookie(token, Duration.ofHours(1)).toString())
+                .header("X-XSRF-TOKEN", token)
+                .body(new CsrfTokenResponse(token));
+    }
+
+    public record CsrfTokenResponse(String token) {}
     @PostMapping("/register")
     public ResponseEntity<SessionResponse> register(@Valid @RequestBody RegisterRequest request) {
         UserAccount user = auth.register(request);
